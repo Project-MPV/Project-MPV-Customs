@@ -1,7 +1,7 @@
 --A Card Entrusted
 local s,id=GetID()
 function s.initial_effect(c)
-    --Activate
+	--Activate
 	aux.AddSkillProcedure(c,2,false,nil,nil)
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -33,7 +33,7 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,tp,id)
 	--skill effect
 	local card1=Duel.CreateToken(tp,24874630)
--- create a group containing the cards
+	-- create a group containing the cards
 	local g=Group.FromCards(card1)
 	-- put the cards to the deck
 	Duel.SendtoDeck(g,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
