@@ -18,8 +18,8 @@ function s.initial_effect(c)
     e2:SetOperation(s.spop)
     c:RegisterEffect(e2)
 end
-s.listed_names={CARD_ASSAULT_MODE,c200009310}
-s.assault_mode=c200009310
+s.listed_names={CARD_ASSAULT_MODE,200009310}
+s.assault_mode=200009310
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
@@ -35,7 +35,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 
 function s.spfilter(c,e,tp)
-	return c:IsCode(c200009310) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(200009310) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
