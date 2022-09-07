@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
-	aux.AddSkillProcedure(c,2,false,nil,nil)
+	aux.AddSkillProcedure(c,3,false,nil,nil)
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -34,9 +34,15 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 	--skill effect
 	local card1=Duel.CreateToken(tp,85914562)
 	local card2=Duel.CreateToken(tp,85914562)
-	local card3=Duel.CreateToken(tp,200009347)
+	local card3=Duel.CreateToken(tp,301)
+	local card4=Duel.CreateToken(tp,301)
+	local card5=Duel.CreateToken(tp,301)
+	local card6=Duel.CreateToken(tp,303)
+	local card7=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
+	local card8=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
+	local card9=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
 	-- create a group containing the cards
-	local g=Group.FromCards(card1,card2,card3)
+	local g=Group.FromCards(card1,card2,card3,card4,card5,card6,card7,card8,card9)
 -- put the cards to the deck
 	Duel.SendtoDeck(g,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

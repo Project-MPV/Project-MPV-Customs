@@ -1,7 +1,7 @@
---King of Dragons with Eyes of Blue
+--Mark of the (I/P) Dragon - Head
 local s,id=GetID()
-function c210000868.initial_effect(c)
---Activate
+function s.initial_effect(c)
+	--Activate
 	aux.AddSkillProcedure(c,3,false,nil,nil)
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -32,12 +32,11 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SKILL_FLIP,tp,id|(1<<32))
 	Duel.Hint(HINT_CARD,tp,id)
 	--skill effect
-	local card1=Duel.CreateToken(tp,200009312)
-	local card2=Duel.CreateToken(tp,200009312)
-	local card3=Duel.CreateToken(tp,200009312)
-	local card4=Duel.CreateToken(tp,200009043)
--- create a group containing the cards
-	local g=Group.FromCards(card1,card2,card3,card4)
+	local card1=Duel.CreateToken(tp,46609443)
+	local card2=Duel.CreateToken(tp,46609443)
+	local card3=Duel.CreateToken(tp,5035)
+	-- create a group containing the cards
+	local g=Group.FromCards(card1,card2,card3)
 -- put the cards to the deck
 	Duel.SendtoDeck(g,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
