@@ -1,35 +1,50 @@
+---During your Standby Phase: Special Summon this Banished monster. 
+--During your End Phase: Banish this card.
 local s,id=GetID()
 function s.initial_effect(c)
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
-    e1:SetCategory(CATEGORY_REMOVE)
+    e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-    e1:SetHintTiming(TIMING_PHASE_END)
-    e1:SetRange(LOCATION_MZONE)
-    e1:SetCondition(s.rmcon)
-    e1:SetOperation(s.rmop)
+    e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+    e1:SetRange(LOCATION_REMOVED)
+    e1:SetCondition(s.condition)
+    e1:SetCondition(s.target)
+    e1:SetOperation(s.operation)
     c:RegisterEffect(e1)
+    local e2=Effect.CreateEffect(c)
+    e2:SetDescription(aux.Stringid(id,1))
+    e2:SetCategory(CATEGORY_REMOVE)
+    e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+    e2:SetCode(EVENT_PHASE+PHASE_END)
+    e2:SetRange(LOCATION_MZONE)
+    e2:SetCondition(s.condition)
+    e2:SetTarget(s.rmtg)
+    e2:SetOperation(s.rmop)
+    c:RegisterEffect(e2)
 end
-function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsEndPhase() and not e:GetHandler()
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return tp==Duel.GetTurnPlayer()
+end
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+			return
+		end
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
-	local g=Group.FromCards(c,tc)
-	local mcount=0
-		local oc=og:GetFirst()
-		for oc in aux.Next(og) do
-			oc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,0,1)
-		end
-		og:KeepAlive()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-		e1:SetLabel(mcount)
-		e1:SetCountLimit(1)
-		e1:SetLabelObject(og)
-		Duel.RegisterEffect(e1,tp)
+	if e:GetHandler():IsRelateToEffect(e) then
+		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+	end
 end
