@@ -40,8 +40,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
+    if chk==0 then return true end
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
