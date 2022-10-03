@@ -22,6 +22,16 @@ function s.initial_effect(c)
     e2:SetTarget(s.rmtg)
     e2:SetOperation(s.rmop)
     c:RegisterEffect(e2)
+    local e3=Effect.CreateEffect(c)
+    e3:SetDescription(aux.Stringid(id,2))
+    e3:SetCategory(CATEGORY_REMOVE)
+    e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+    e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCountLimit(1)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTarget(s.secrmtg)
+	e3:SetOperation(s.secrmop)
+	c:RegisterEffect(e3)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
@@ -46,5 +56,18 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
 		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+	end
+end
+function s.secrmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+end
+function s.secrmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
