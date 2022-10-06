@@ -4,7 +4,7 @@ function s.initial_effect(c)
     e1:SetDescription(id,0)
     e1:SetCategory(CATEGORY_DRAW)
     e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-    e1:SetCode(EVENT_DESTROYED or EVENT_LEAVE_FIELD or EVENT_DISCARD)
+    e1:SetCode(EVENT_DISCARD or EVENT_)
     e1:SetCondition(s.drawsetup)
     e1:SetOperation(s.draw)
 end
