@@ -80,5 +80,5 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-	end
+end
 end
