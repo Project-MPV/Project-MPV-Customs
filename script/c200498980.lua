@@ -40,7 +40,6 @@ function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOHAND)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g1=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 	local g2=Duel.SelectMatchingCard(1-tp,s.cfilter2,1-tp,LOCATION_MZONE,0,1,1,nil)
