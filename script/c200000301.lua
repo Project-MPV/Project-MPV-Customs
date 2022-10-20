@@ -49,7 +49,8 @@ function s.spsmop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_GRAVE,0)+c.IsCode(CARD_BLUEEYES_W_DRAGON) and Duel.CheckLocation(tp,LOCATION_GRAVE,0)+c.IsSetCard(0x140)+c.IsType(TYPE_TUNER) and Duel.CheckLocation(tp,LOCATION_DECK,0)+c.IsCode(CARD_BLUEEYES_W_DRAGON) and Duel.CheckLocation(tp,LOCATION_DECK,0)+c.IsSetCard(0x140)+c.IsType(TYPE_TUNER) then return end
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-	Duel.MoveToField(c,tp,tp,LOCATION_MZONE,POS_FACEUP,true) and Duel.SynchroSummon()
+	Duel.MoveToField(c,tp,tp,LOCATION_MZONE,POS_FACEUP,true)
+	Duel.SynchroSummon()
 end
 
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
