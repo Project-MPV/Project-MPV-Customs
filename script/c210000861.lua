@@ -34,15 +34,16 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 	--skill effect
 	local card1=Duel.CreateToken(tp,85914562)
 	local card2=Duel.CreateToken(tp,85914562)
-	local card3=Duel.CreateToken(tp,301)
-	local card4=Duel.CreateToken(tp,301)
-	local card5=Duel.CreateToken(tp,301)
+	local card3=Duel.CreateToken(tp,200000301)
+	local card4=Duel.CreateToken(tp,200000301)
+	local card5=Duel.CreateToken(tp,200000301)
 	local card6=Duel.CreateToken(tp,303)
 	local card7=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
 	local card8=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
 	local card9=Duel.CreateToken(tp,CARD_BLUEEYES_W_DRAGON)
+	local card10=Duel.CreateToken(tp,85914562)
 	-- create a group containing the cards
-	local g=Group.FromCards(card1,card2,card3,card4,card5,card6,card7,card8,card9)
+	local g=Group.FromCards(card1,card2,card3,card4,card5,card6,card7,card8,card9,card10)
 -- put the cards to the deck
 	Duel.SendtoDeck(g,tp,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
