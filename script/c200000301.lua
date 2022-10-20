@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 --Pendulum Effect
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid,3)
+	e3:SetDescription(aux.Stringid(id,3))
 	e3:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH)
 	e3:SetRange(LOCATION_PZONE)
