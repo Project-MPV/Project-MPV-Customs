@@ -2,11 +2,11 @@
 function c303.initial_effect(c)
 --Fusion Procedure
 	c:EnableReviveLimit()
-	Fusion.AddProcMixN(c,true,true,302,2)
+	Fusion.AddProcMixN(c,true,true,200000301,3)
 c:SetUniqueOnField(1,1,aux.FilterBoolFunction(Card.IsCode(),LOCATION_MZONE)
 end
 s.material_setcode=0xdd
-s.listed_name={302}
+s.listed_name={200000301}
 end
 --special summon condition
 	local e1=Effect.CreateEffect(c)
@@ -24,8 +24,8 @@ end
 	c:RegisterEffect(e2)
 end
 function s.val(e,c)
-	return Duel.GetMatchingGroupCount(s.filter,c:GetControler(),0,LOCATION_GRAVE+LOCATION_MZONE,nil)*600
+	return Duel.GetMatchingGroupCount(s.filter,c:GetControler(),0,LOCATION_GRAVE,nil)*600
 end
 function s.filter(c)
-	return c:IsSetCode(0xdd) and c:IsSetCode() and(c:IsLocation(LOCATION_GRAVE)
+	return c:IsSetCode(0xdd) or c:IsSetCode(0x776e) or c:IsSetCode(0x140) and (c:IsLocation(LOCATION_GRAVE)
 end
