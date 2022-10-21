@@ -2,10 +2,10 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
-	local e1=Fusion.CreateSummonEff({handler=c,fusfilter=aux.FilterBoolFunction(Card.IsSetCard,0x303),matfilter=Card.IsAbleToDeck,extrafil=s.extrafil,extraop=Fusion.ShuffleMaterial})
+	local e1=Fusion.CreateSummonEff(c,aux.FilterBoolFunction(Card.IsSetCard,0x303),Fusion.OnFieldMat(Card.IsAbleToDeck),s.fextra,Fusion.ShuffleMaterial)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
-	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,aux.FALSE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E)
+	c:RegisterEffect(e1,true)
 	--draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
@@ -20,21 +20,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x303}
-function s.check(g1,g2)
-	return function(tp,sg,fc)
-		local c1=#(sg&g1)
-		local c2=#(sg&g2)
-		return c1<=1 and c2<=1,c1>1 or c2>1
-	end
-end
-function s.extrafil(e,tp,mg)
-	if Duel.GetCustomActivityCount(id,1-e:GetHandlerPlayer(),ACTIVITY_CHAIN)==0 then return nil end
-	local loc=LOCATION_HAND
-	if not Duel.IsPlayerAffectedByEffect(tp,69832741) then
-		loc=loc|LOCATION_ONFIELD
-	end
-	local g=Duel.GetMatchingGroup(Fusion.IsMonsterFilter(Card.IsAbleToDeck),tp,loc,0,mg)
-	return g,s.check(g:Split(Card.IsLocation,nil,LOCATION_ONFIELD))
+function s.fextra(e,tp,mg)
+	return Duel.GetMatchingGroup(Fusion.IsMonsterFilter(Card.IsAbleToDeck),tp,LOCATION_HAND,0,nil)
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re then return false end

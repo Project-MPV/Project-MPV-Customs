@@ -68,7 +68,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 
 function s.spfilter(c,e,tp)
-	return c:IsCode(1004) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsCode(200498980) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
