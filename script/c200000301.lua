@@ -56,6 +56,19 @@ function s.spsmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SynchroSummon()
 	end
 end
+--Adamancipator Tuner
+function s.spfilter1(c,e,tp)
+	return c:IsSetCard(0x140) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+		and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK,0,1,c,e,tp)
+end
+--Blue-Eyes non-Tuner
+function s.spfilter2(c,e,tp)
+	return c:IsSetCard(0xdd) and not c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
+--Check Blue-Eyes Synchro in Extra
+function s.scfilter(c,mg)
+	return c:IsSetCard(0xdd) and c:IsSynchroSummonable(nil,mg)
+end
 
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
@@ -66,6 +79,24 @@ if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOC
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	---Inherent Synchro
+	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g1=Duel.SelectMatchingCard(tp,s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g2=Duel.SelectMatchingCard(tp,s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,g1:GetFirst(),e,tp)
+	g1:Merge(g2)
+		for tc in aux.Next(g1) do
+			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+		end
+		Duel.SpecialSummonComplete()
+		local eg=Duel.GetMatchingGroup(s.scfilter,tp,LOCATION_EXTRA,0,nil,mg)
+		if #eg>0 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=eg:Select(tp,1,1,nil)
+			Duel.SynchroSummon(tp,sg:GetFirst(),nil,mg)
+		end
 	end
 end
 
