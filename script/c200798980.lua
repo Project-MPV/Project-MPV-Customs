@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,id)
 	--fusion material
 	c:EnableReviveLimit()
-	Fusion.AddProcMix(c,true,true,aux.FilterBoolFunctionEx(Card.IsCode,200198980),s.ffilter)
+	Fusion.AddProcMix(c,true,true,200198980,s.ffilter)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.ffilter(c,fc,sumtype,tp)
-	return c:IsRace(RACE_FAIRY,fc,sumtype,tp) and c:IsLevelAbove(5)
+	return c:IsRace(RACE_FAIRY,fc,sumtype,tp) and c:GetLevel()>=5
 end
 function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
