@@ -79,7 +79,7 @@ if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOC
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-	---Inherent Synchro
+	--Special Summon
 	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g1=Duel.SelectMatchingCard(tp,s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
@@ -90,6 +90,7 @@ if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOC
 			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 		Duel.SpecialSummonComplete()
+	--Inherent Synchro
 		local eg=Duel.GetMatchingGroup(s.scfilter,tp,LOCATION_EXTRA,0,nil,mg)
 		if #eg>0 then
 			Duel.BreakEffect()
