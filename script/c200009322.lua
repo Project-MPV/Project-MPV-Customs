@@ -17,6 +17,22 @@ function s.initial_effect(c)
     e2:SetTarget(s.sptg)
     e2:SetOperation(s.spop)
     c:RegisterEffect(e2)
+    local e3=Effect.CreateEffect(c)
+    e3:SetDescription(aux.Stringid(id,2))
+    e3:SetType(EFFECT_TYPE_QUICK_O)
+    e3:SetCategory(CATEGORY_ATKCHANGE)
+    e3:SetCode(EVENT_FREE_CHAIN)
+    e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+    e3:SetHintTiming(TIMING_BATTLE_PHASE)
+    e3:SetRange(LOCATION_MZONE)
+    e3:SetCondition(s.atkchngcon)
+    e3:SetTarget(s.atkchngtg)
+    e3:SetOperation(s.atkchng)
+    c:RegisterEffect(e3)
+    local e4=Effect.CreateEffect(c)
+    c:RegisterEffect(e4)
+    local e5=Effect.CreateEffect(c)
+    c:RegisterEffect(e5)
 end
 s.listed_names={CARD_ASSAULT_MODE,200009310}
 s.assault_mode=200009310
@@ -43,4 +59,22 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+
+function s.atkchngcon(e,tp,eg,ep,ev,re,r,rp)
+    return Duel.IsBattlePhase() and not e:GetHandler():IsStatus(STATUS_CHAINING)
+end
+
+function s.atkchngtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+    if chkc then return false end
+    local c=e:GetHandler()
+    local bc=c:GetBattleTarget()
+    if chk==0 then do return bc and bc:IsOnField() and bc:IsCanBeEffectTarget(e) end
+    Duel.SetTargetCard(bc)
+    local g=Group.FromCards(bc)
+    Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g,1,0,0)
+end
+
+function s.atkchng(e,tp,eg,ep,ev,re,r,rp)
+    
 end
