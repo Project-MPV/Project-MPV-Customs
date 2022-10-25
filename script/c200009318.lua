@@ -18,6 +18,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
     e2:SetCode(EVENT_PHASE+PHASE_END)
     e2:SetRange(LOCATION_MZONE)
+    e2:SetCountLimit(1)
     e2:SetCondition(s.condition)
     e2:SetTarget(s.rmtg)
     e2:SetOperation(s.rmop)
@@ -59,10 +60,10 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.secrmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,1-tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,1-tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function s.secrmop(e,tp,eg,ep,ev,re,r,rp)
