@@ -19,7 +19,7 @@ function s.initial_effect(c)
     e2:SetCode(EVENT_PHASE+PHASE_END)
     e2:SetRange(LOCATION_MZONE)
     e2:SetCountLimit(1)
-    e2:SetCondition(s.condition)
+    e2:SetCondition(s.condition2)
     e2:SetTarget(s.rmtg)
     e2:SetOperation(s.rmop)
     c:RegisterEffect(e2)
@@ -34,8 +34,11 @@ function s.initial_effect(c)
 	e3:SetOperation(s.secrmop)
 	c:RegisterEffect(e3)
 end
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
+function s.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
+end
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return 1-tp==Duel.GetTurnPlayer()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
