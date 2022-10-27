@@ -111,7 +111,6 @@ function s.pencon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_REMOVED,e:GetHandler(),1,0,0)
 end
 function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
