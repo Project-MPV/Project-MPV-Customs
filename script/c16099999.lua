@@ -46,27 +46,25 @@ function s.initial_effect(c)
 	e5:SetTarget(s.target)
 	e5:SetOperation(s.operation)
 	c:RegisterEffect(e5)
-
 	--pendulum zone
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(id,2))
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e7:SetCode(EVENT_DESTROYED)
-	e7:SetProperty(EFFECT_FLAG_DELAY)
-	e7:SetCondition(s.pencon)
-	e7:SetTarget(s.pentg)
-	e7:SetOperation(s.penop)
-	c:RegisterEffect(e7)
-	
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(id,2))
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e6:SetCode(EVENT_DESTROYED)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCondition(s.pencon)
+	e6:SetTarget(s.pentg)
+	e6:SetOperation(s.penop)
+	c:RegisterEffect(e6)
 	--splimit
-	local e9=Effect.CreateEffect(c)
-	e9:SetType(EFFECT_TYPE_FIELD)
-	e9:SetRange(LOCATION_PZONE)
-	e9:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e9:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e9:SetTargetRange(1,0)
-	e9:SetTarget(s.splimit)
-	c:RegisterEffect(e9)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetRange(LOCATION_PZONE)
+	e7:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e7:SetTargetRange(1,0)
+	e7:SetTarget(s.splimit)
+	c:RegisterEffect(e7)
 end
 function s.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0x994) and (sumtp&SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
@@ -100,8 +98,6 @@ end
 function s.aatg(e,c)
 	return c==e:GetHandler():GetBattleTarget()
 end
-
-
 function s.filter(c)
 	return c:IsSetCard(0x993)and c:IsAbleToDeck()
 end
@@ -116,14 +112,13 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetCards(e)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA)
 	local dg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
 	if ct>0 and #dg>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local rg=dg:Select(tp,1,ct,nil)
 		Duel.HintSelection(rg)
-		Duel.SendtoDeck(rg,nil,1,REASON_EFFECT)
+		Duel.SendtoDeck(rg,nil,2,REASON_EFFECT)
 	end
 end
 function s.pencon(e,tp,eg,ep,ev,re,r,rp)
