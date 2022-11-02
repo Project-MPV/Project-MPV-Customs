@@ -93,12 +93,15 @@ function s.atkop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(0)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		--after that, disable them
 		local e2=e1:Clone()
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+		tc:RegisterEffect(e2)
+		--after that, disable them
+		local e3=e1:Clone()
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
 end
 end
 function s.efilter(e,te)
