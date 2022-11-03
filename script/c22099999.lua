@@ -1,6 +1,7 @@
---Eternity Ace - Chaos Matter
+--Eternity Ace - Chaos Divider
 local s,id=GetID()
 function s.initial_effect(c)
+	c:SetUniqueOnField(1,0,id)
 	--fusion material
 	c:EnableReviveLimit()
 	Fusion.AddProcMix(c,true,true,s.ffilter1,s.ffilter2)
