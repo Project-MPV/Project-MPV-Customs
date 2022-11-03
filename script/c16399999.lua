@@ -70,8 +70,8 @@ function s.descost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.destg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToDeck() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function s.desop1(e,tp,eg,ep,ev,re,r,rp)
@@ -86,7 +86,7 @@ function s.desop1(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
 			e1:SetValue(tc:GetBaseAttack()/2)
 			c:RegisterEffect(e1)
-	end
+end
 end
 function s.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x994)
