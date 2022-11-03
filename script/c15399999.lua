@@ -1,4 +1,4 @@
---Eternity Ace - Fortress Dragon
+--Eternity Ace - Great War Dragon
 local s,id=GetID()
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,id)
@@ -59,7 +59,7 @@ end
 s.listed_series={0x994}
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
-	if g:IsExists(Card.IsSetCard,1,nil,0x994) and g:IsExists(Card.IsCode,1,nil,14799999)then
+	if g:IsExists(Card.IsSetCard,1,nil,0x994) and g:IsExists(Card.IsCode,1,nil,147)then
 	local reset=RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD
 		c:RegisterFlagEffect(id,reset,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end

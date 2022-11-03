@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	--Synchro Summon
 	Synchro.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsType,TYPE_SYNCHRO),1,1,Synchro.NonTunerEx(Card.IsSetCard,0x994),1,1)
 	c:EnableReviveLimit()
-	--If synchro summoned, return all of your opponent's monster to hand
+	--If synchro summoned, return all of your opponent'smonster to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND)

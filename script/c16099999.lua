@@ -81,7 +81,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 end
 function s.matfilter(c,sc)
-	return c:IsCode(15799999) and c:IsType(TYPE_XYZ,sc,SUMMON_TYPE_XYZ)
+	return c:IsCode(157) and c:IsType(TYPE_XYZ,sc,SUMMON_TYPE_XYZ)
 end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
