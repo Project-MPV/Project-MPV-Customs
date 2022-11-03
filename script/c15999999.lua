@@ -60,7 +60,7 @@ function s.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local bc=e:GetHandler():GetBattleTarget()
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetOperationInfo(0,CATEGORY_RTOHAND,bc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,bc,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,bc:GetBaseAttack())
 end
 function s.ddop(e,tp,eg,ep,ev,re,r,rp)
