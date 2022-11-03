@@ -16,10 +16,11 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DAMAGE_STEP_END)
+	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(s.atcon)
+	e2:SetCost(s.atcost)
 	e2:SetOperation(s.atop)
 	c:RegisterEffect(e2)	
 	--act limit
@@ -52,6 +53,15 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.chainlm(e,rp,tp)
 	return tp==rp
+end
+function s.cfilter(c)
+	return c:IsSetCard(0x993) and c:IsAbleToRemoveAsCost()
+end
+function s.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_FZONE+LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_FZONE+LOCATION_DECK,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function s.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
