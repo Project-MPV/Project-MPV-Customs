@@ -40,7 +40,12 @@ function s.initial_effect(c)
 	e4:SetCondition(s.actcon)
 	c:RegisterEffect(e4)
 end
-
+function s.actcon(e)
+	local tp=e:GetHandlerPlayer()
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	return (a and s.acfilter(a,tp)) or (d and s.acfilter(d,tp))
+end
 function s.descfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_SZONE) and c:IsFaceup() and c:IsSetCard(0x677) and c:IsControler(tp)
 end
