@@ -58,7 +58,7 @@ function s.seqop(e,tp,eg,ep,ev,re,r,rp,chk)
 								return te:IsActivatable(tp,true,true)
 							end,
 							function(c)
-								aux.PlayFieldSpell(tc,e,tp,eg,ep,ev,re,r,rp)
+								Duel.ActivateFieldSpell(tc,e,tp,eg,ep,ev,re,r,rp)
 							end,
 							aux.Stringid(id,2))
 end

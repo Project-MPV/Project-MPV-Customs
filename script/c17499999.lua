@@ -35,12 +35,12 @@ function s.atkval(e)
 	return 400+300*g
 end
 function s.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x677)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x677) and not c:IsForbidden()
 end
 function s.seqop(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,(s.filter),tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
@@ -53,11 +53,10 @@ function s.seqop(e,tp,eg,ep,ev,re,r,rp,chk)
 		tc:RegisterEffect(e1)
 		Duel.RaiseEvent(tc,EVENT_CUSTOM+47408488,e,0,tp,0,0)
 		end
-local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.TRUE,1-tp,LOCATION_SZONE,nil,e)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_SZONE,nil,e)
 		if #g>0 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOHAND)
 			local dg=g:Select(tp,1,1,nil)
 			Duel.HintSelection(dg)
 			Duel.SendtoHand(dg,nil,REASON_EFFECT)

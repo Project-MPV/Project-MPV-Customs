@@ -40,6 +40,9 @@ function s.initial_effect(c)
 	e4:SetCondition(s.actcon)
 	c:RegisterEffect(e4)
 end
+function s.acfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x677) and c:IsControler(tp)
+end
 function s.actcon(e)
 	local tp=e:GetHandlerPlayer()
 	local a=Duel.GetAttacker()
