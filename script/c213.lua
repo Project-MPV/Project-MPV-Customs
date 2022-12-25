@@ -39,8 +39,11 @@ function s.sumval(e,c)
 		return 0,sumzone,relzone
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetAttacker():IsControler(tp) and Duel.GetAttacker():IsSetCard(0x8))
-		or (Duel.GetAttackTarget() and Duel.GetAttackTarget():IsControler(tp) and Duel.GetAttackTarget():IsSetCard(0x8))
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if not d then return false end
+	if a:IsControler(1-tp) then a,d=d,a end
+	return a:IsSetCard(0x8) and a:IsRelateToBattle()
 end
 function s.filter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x8) and c:GetAttack()>0 and c:IsAbleToGraveAsCost() 
