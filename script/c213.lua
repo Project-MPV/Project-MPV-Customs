@@ -10,6 +10,7 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x8))
 	e1:SetValue(s.sumval)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -32,11 +33,10 @@ function s.matfilter(c,lc,sumtype,tp)
 	return c:IsSetCard(0x8,lc,sumtype,tp)
 end
 function s.sumval(e,c)
-		if c:IsControler(e:GetHandlerPlayer()) and c:IsSetCard(0x8) then
+		local c=e:GetLabelObject() 
 		local sumzone=e:GetHandler():GetLinkedZone()
 		local relzone=-(1<<e:GetHandler():GetSequence())
 		return 0,sumzone,relzone
-end
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetAttacker():IsControler(tp) and Duel.GetAttacker():IsSetCard(0x8))
