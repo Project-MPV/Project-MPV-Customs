@@ -10,45 +10,43 @@ function s.initial_effect(c)
 	e1:SetOperation(s.op)
 	c:RegisterEffect(e1)
 end
---note:{aux.Stringid(id,0)== "Destroy"} and {aux.Stringid(id,1)== "Special Summon"} the string set become Topsy-Turvy, somehow....
 function s.desfilter(c)
 	return c:IsFacedown() and c:IsDestructable()
 end
 function s.spfilter(c,e,tp)
-	return c:IsMonster() and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-	and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) 
-	else Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_ONFIELD,1,nil)  end
-	local sg=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	local b1=Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_ONFIELD,2,nil)
+		and Duel.GetFlagEffect(tp,id)==0
+	local b2=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		and Duel.GetFlagEffect(tp,id+1)==0
+	if chk==0 then return b1 or b2 end
+	Duel.SetPossibleOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
+	Duel.SetPossibleOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp,g)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e)then
-		Duel.BreakEffect()
-	if Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,0))==0 then
---Special Summon	
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if #g>0 then
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) end
-		else
---Destroy	
-	local c=e:GetHandler()
-	local sg=Duel.GetMatchingGroup(s.desfilter,1-tp,LOCATION_ONFIELD,nil,e)
-		if #sg>0 then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=sg:Select(tp,2,2,nil)
-			Duel.HintSelection(dg)
-			Duel.Destroy(dg,REASON_EFFECT)
-
-end
-end
-end
+local b1=Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_ONFIELD,2,nil)
+		and Duel.GetFlagEffect(tp,id)==0
+local b2=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		and Duel.GetFlagEffect(tp,id+1)==0
+	local op=0
+	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(id,0))
+	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(id,1))+1
+	else return end
+if op==0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,0,LOCATION_ONFIELD,2,2,nil)
+		Duel.Destroy(g,REASON_EFFECT)
+		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		if #g>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
+	end
 end
