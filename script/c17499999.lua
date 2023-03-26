@@ -22,6 +22,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1)
+	e3:SetTarget(s.seqtg)
 	e3:SetOperation(s.seqop)
 	c:RegisterEffect(e3)
 end
@@ -36,6 +37,10 @@ function s.atkval(e)
 end
 function s.filter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x677) and not c:IsForbidden()
+end
+function s.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 end
 function s.seqop(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end

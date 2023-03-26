@@ -29,7 +29,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
-	Duel.SelectYesNo(tp,aux.Stringid(id,0))
+	if Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 	Duel.BreakEffect()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -45,6 +45,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1)
 		Duel.RaiseEvent(tc,EVENT_CUSTOM+47408488,e,0,tp,0,0)
+end
 end
 end
 	
