@@ -45,14 +45,14 @@ function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	if a:IsControler(1-tp) then a,d=d,a end
 	return a:IsSetCard(0x8) and a:IsRelateToBattle()
 end
-function s.filter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x8) and c:GetAttack()>0 and c:IsAbleToGraveAsCost() 
+function s.filter2(c,e)
+	return c:IsSetCard(0x8) and c:GetAttack()>0 and c:IsAbleToGraveAsCost() and not c:GetBattleTarget()
 end
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(id)==0
-		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
+		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler():GetBattleTarget()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
+	local g1=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler():GetBattleTarget())
 	e:SetLabel(g1:GetFirst():GetAttack())
 	Duel.SendtoGrave(g1,REASON_COST)
 	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE+PHASE_END,0,1)
