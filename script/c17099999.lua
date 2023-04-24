@@ -41,13 +41,14 @@ function s.recop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
-	Duel.SelectYesNo(tp,aux.Stringid(id,1))
+	if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.afilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 end	
+end
 end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
