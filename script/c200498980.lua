@@ -42,7 +42,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g1=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_MZONE,0,1,1,nil)
-	local g2=Duel.SelectMatchingCard(1-tp,s.cfilter2,tp,0,LOCATION_MZONE,1,1,nil)
+	local g2=Duel.SelectMatchingCard(tp,s.cfilter2,tp,0,LOCATION_MZONE,1,1,nil)
 	g1:Merge(g2)
 	if c:IsRelateToEffect(e) and ft>0 then
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
