@@ -31,12 +31,11 @@ function s.spfilter(c)
 	return c:IsSetCard(0x46) or c:IsCode(8855578) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.CheckLPCost(tp,1500) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	if chk==0 then return Duel.CheckLPCost(tp,1600) end
-	Duel.PayLPCost(tp,1600)
+	Duel.PayLPCost(tp,1500)
 end
 function s.stage2(e,tc,tp,sg,chk)
 if chk==1 then
