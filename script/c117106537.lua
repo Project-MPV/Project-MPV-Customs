@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(aux.DarklightLimit)
+	e1:SetValue(aux.DarkLightLimit)
 	c:RegisterEffect(e1)
 	--Check materials used for its fusion summon
 	local e2=Effect.CreateEffect(c)
