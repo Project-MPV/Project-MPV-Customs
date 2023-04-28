@@ -8,10 +8,10 @@ c:SetUniqueOnField(1,0,id)
 	--Special Summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(aux.DarkLightLimit)
+	e1:SetValue(s.splimit)
 	c:RegisterEffect(e1)
 	--copy
 	local e2=Effect.CreateEffect(c)
@@ -44,6 +44,9 @@ function s.ffilter(c,fc,sumtype,tp)
 end
 function s.ffilter1(c,fc,sumtype,tp)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ)
+end
+function s.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or se:GetHandler():IsCode(117106529)
 end
 function s.copycon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
