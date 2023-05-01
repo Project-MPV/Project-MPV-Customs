@@ -14,6 +14,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0x50}
 s.counter_place_list={0x1009}
+s.listed_names={8062132,72677437}
 function s.filter(c,e,tp)
 	return (c:IsSetCard(0x50) or c:IsCode(72677437)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -32,5 +33,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
   local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
   local tc=g:GetFirst() 
+  local atk=tc:GetAttack()  
   tc:AddCounter(0x1009,1)
+  if atk>0 and tc:GetAttack()==0 then
+  g:AddCard(tc)
+  if #g>0 then
+ 	 Duel.RaiseEvent(tc,EVENT_CUSTOM+54306223,e,0,0,0,0)
 end
+end
+end
+
