@@ -32,7 +32,7 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsControler(1-tp) then
+	if tc:IsRelateToEffect(e) then
 		local atk=tc:GetTextAttack()
 		if atk<0 then atk=0 end
 		if Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:IsPreviousLocation(LOCATION_MZONE) then
