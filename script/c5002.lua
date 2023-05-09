@@ -1,6 +1,7 @@
 --
 local s,id=GetID()
 function s.initial_effect(c)
+	c:SetUniqueOnField(1,0,id)
 	c:EnableReviveLimit()
 	Link.AddProcedure(c,aux.FilterBoolFunctionEx(s.matfilter),3,nil,s.matcheck)	
 	--Cannot be destroyed by effects
