@@ -61,12 +61,12 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		--Cannot be targeted by monster effects
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(3003)
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetValue(s.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 		c:RegisterEffect(e1)
 end
 end
