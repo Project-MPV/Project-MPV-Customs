@@ -14,11 +14,11 @@ function c200009316.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.atcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,500) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler()) and Duel.CheckLPCost(tp,500) end
 	Duel.PayLPCost(tp,500)
 end
 function s.atg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
 end
 function s.atop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)		  
