@@ -39,14 +39,17 @@ function s.ritlimit(e,se,sp,st)
 	end
 	return true
 end
+function s.setfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() and c:IsType(TYPE_MONSTER)
+end
 function s.flipt(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 end
 function s.flipo(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 	Duel.BreakEffect()
 	local sg=g:Select(tp,1,1,nil)
