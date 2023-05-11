@@ -27,7 +27,8 @@ function s.initial_effect(c)
     e3:SetDescription(aux.Stringid(id,2))
     e3:SetCategory(CATEGORY_REMOVE)
     e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-    e3:SetType(EFFECT_TYPE_IGNITION)
+    e3:SetType(EFFECT_TYPE_QUICK_O)
+    e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCountLimit(1)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(s.secrmtg)
@@ -38,7 +39,7 @@ function s.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return 1-tp==Duel.GetTurnPlayer()
+	return tp==Duel.GetTurnPlayer()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -64,14 +65,37 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.secrmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,1-tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,aux.TRUE,1-tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function s.secrmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	if tc and tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0
+		and tc:IsLocation(LOCATION_REMOVED) then
+		local ct=(Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()<=PHASE_STANDBY) and 2 or 1
+		local val=(Duel.GetTurnPlayer()==1-tp and Duel.GetCurrentPhase()<=PHASE_STANDBY) and Duel.GetTurnCount() or (Duel.GetTurnCount()-1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,1))
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetLabelObject(tc)
+		e1:SetCountLimit(1)
+		e1:SetCondition(s.retcon)
+		e1:SetOperation(s.retop)
+		e1:SetLabel(val)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_OPPO_TURN,ct)
+		Duel.RegisterEffect(e1,tp)
+		tc:CreateEffectRelation(e1)
 	end
+end
+function s.retcon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnPlayer()~=1-tp or Duel.GetTurnCount()==e:GetLabel() then return false end
+	local tc=e:GetLabelObject()
+	return tc:IsRelateToEffect(e)
+end
+function s.retop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.ReturnToField(tc)
 end
