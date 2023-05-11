@@ -37,7 +37,8 @@ function s.mfilter(c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return not c:IsPublic() and c:GetFlagEffect(id)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return not c:IsPublic() and c:GetFlagEffect(id)==0 and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
+	and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	and Duel.IsExistingMatchingCard(s.mfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	c:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 end
