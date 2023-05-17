@@ -34,6 +34,15 @@ function s.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_UNRELEASABLE_NONSUM)
 	c:RegisterEffect(e4)
+	--cannot to GY
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetCode(EFFECT_CANNOT_TO_GRAVE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(1,1)
+	e5:SetTarget(s.gylimit)
+	c:RegisterEffect(e5)
 end
 s.listed_series={0x7530}
 s.material_setcode=0x7530
@@ -83,4 +92,7 @@ function s.econ(e)
 end
 function s.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
+end
+function s.gylimit(e,c,tp,r)
+	return c==e:GetHandler() and r==REASON_EFFECT
 end
