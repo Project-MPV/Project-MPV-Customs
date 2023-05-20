@@ -71,9 +71,6 @@ end
 function s.lvfilter2(c)
 	return c:IsFaceup() and (c:HasLevel() or c:GetRank())
 end
-function s.rkcon(c)
-	return c:IsFaceup() and c:GetRank()
-end
 function s.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.IsExistingMatchingCard(s.lvfilter1,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.GetFlagEffect(tp,id)==0
@@ -106,15 +103,15 @@ if op==0 then
 		e1:SetValue(lv)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_CHANGE_RANK)
-		e2:SetCondition(s.rkcon)
-		e2:SetValue(lv)
-		tc:RegisterEffect(e1)
-		local tclv=tc:GetLevel()
-	--i still don't know hot to set it
-			Duel.Recover(tp,math.abs(lv-tclv)*500,REASON_EFFECT)
-	
+		if tc:IsType(TYPE_XYZ) then
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_CHANGE_RANK)
+			e2:SetValue(lv)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			end
+			Duel.Recover(tp,math.abs(lv)*300,REASON_EFFECT)
 	end
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 	else
@@ -130,14 +127,15 @@ if op==0 then
 		e1:SetValue(lv)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_CHANGE_RANK)
-		e2:SetCondition(s.rkcon)
-		e2:SetValue(lv)
-		tc:RegisterEffect(e1)
-		local tclv=tc:GetLevel()
-	--i still don't know hot to set it
-			Duel.Recover(tp,math.abs(lv-tclv)*500,REASON_EFFECT)
+		if tc:IsType(TYPE_XYZ) then
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_CHANGE_RANK)
+			e2:SetValue(lv)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+		end
+			Duel.Recover(tp,math.abs(lv)*300,REASON_EFFECT)
 	end
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 	end
