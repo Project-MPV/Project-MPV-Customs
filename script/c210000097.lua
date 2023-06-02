@@ -34,10 +34,10 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 	--skill effect
 	local card1=Duel.CreateToken(tp,110000101)
 	local g=Group.CreateGroup(card1)
-	--Move it manually to your field (From Void)
+	--Now it can activate
 	if #g>0 then
 		Duel.Hint(HINT_CARD,0,id)
 		local sc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.MoveToField(sc,sc:GetControler(),sc:GetControler(),LOCATION_FZONE,POS_FACEUP,true)
+		Duel.ActivateFieldSpell(sc,e,tp,eg,ep,ev,re,r,rp)
 end
 end
