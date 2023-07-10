@@ -47,6 +47,7 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(1-tp,0,LOCATION_DECK)<=0
 		or not e:GetHandler():IsRelateToEffect(e)then return end
+	Duel.DisableShuffleCheck()
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
