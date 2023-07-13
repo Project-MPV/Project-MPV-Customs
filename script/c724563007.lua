@@ -33,6 +33,9 @@ function s.initial_effect(c)
 	e2:SetOperation(s.dnop)
 	c:RegisterEffect(e2)
 end
+function s.filter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() 
+end
 function s.uptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,0,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
@@ -44,15 +47,16 @@ function s.upop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local ct=Duel.ChangePosition(g,POS_FACEUP_ATTACK)
 		if ct==#g and g:IsExists(Card.IsSetCard,ct,nil,0xfc12) then
-		local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+		local sg=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil)
 			if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 				Duel.BreakEffect()
 				local tg=sg:Select(tp,1,ct,nil)
-				Duel.ChangePosition(tg,POS_FACEDOWN_DEFENSE)
+			if	Duel.ChangePosition(tg,POS_FACEDOWN_DEFENSE)~=0 then
 				Duel.Damage(1-tp,#tg*300,REASON_EFFECT)
-			end
-		end
-	end
+end
+end
+end
+end
 end
 function s.dncond(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_BATTLE

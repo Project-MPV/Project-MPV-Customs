@@ -46,6 +46,9 @@ end
 function s.cfilter(c,tp)
 	return (c:IsPreviousPosition(POS_FACEUP) or c:IsPreviousPosition(POS_FACEDOWN)) and (c:IsFaceup() or c:IsFacedown()) and c:IsControler(tp)
 end
+function s.nefilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() 
+end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,e:GetHandler(),tp)
 end
@@ -61,7 +64,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
-		local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local g2=Duel.GetMatchingGroup(s.nefilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			local sg=g2:Select(tp,1,1,nil)
