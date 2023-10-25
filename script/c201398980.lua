@@ -64,7 +64,6 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end

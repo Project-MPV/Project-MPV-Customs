@@ -9,6 +9,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,id+1)
 	e2:SetCost(s.cost2)
+	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 	--Special Summon,,,,,
@@ -38,13 +39,17 @@ function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	and Duel.IsExistingMatchingCard(s.cfilter2,tp,0,LOCATION_MZONE,1,nil) end
 	c:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 	local g1=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 	local g2=Duel.SelectMatchingCard(tp,s.cfilter2,tp,0,LOCATION_MZONE,1,1,nil)
 	g1:Merge(g2)
-	if c:IsRelateToEffect(e) and ft>0 then
+	if c:IsRelateToEffect(e) then
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	Duel.SendtoHand(g1,nil,REASON_EFFECT)
 end
