@@ -26,9 +26,13 @@ function s.initial_effect(c)
 	end)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetAttacker():IsSetCard(0x303) then
-		s[0]=true
-		s[1]=true
+local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if a:IsSetCard(0x303) then
+		s[a:GetControler()]=true
+	end
+	if d and d:IsSetCard(0x303) then
+		s[d:GetControler()]=true
 	end
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
