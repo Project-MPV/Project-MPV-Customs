@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCondition(s.spcon)
-	e5:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
+	e5:SetCountLimit(1,id)
 	c:RegisterEffect(e5)
 end
 s.listed_names={78371393}
