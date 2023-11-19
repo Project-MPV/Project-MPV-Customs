@@ -9,8 +9,9 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_CUSTOM+id)
+	e1:SetCode(EVENT_MOVE)
 	e1:SetRange(LOCATION_PZONE)
+	e1:SetCondition(s.cond)
 	e1:SetTarget(s.tstg)
 	e1:SetOperation(s.tsop)
 	c:RegisterEffect(e1)
@@ -39,29 +40,11 @@ function s.initial_effect(c)
 	local e5=e3:Clone()
 	e5:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e5)
-		aux.GlobalCheck(s,function()
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_ADJUST)
-		ge2:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge2,0)
-	end)
 end
 s.listed_series={0x8,0x7970,0x7971}
-function s.cfilter(c)
-	local seq=c:GetSequence()
-	return c:GetFlagEffect(id+seq)==0 and (not c:IsPreviousLocation(LOCATION_PZONE) or c:GetPreviousSequence()~=seq)
-end
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tot=Duel.IsDuelType(DUEL_SEPARATE_PZONE) and 13 or 4
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_PZONE,LOCATION_PZONE,nil)
-	if #g>0 then
-		for tc in aux.Next(g) do
-			tc:ResetFlagEffect(id+tot-tc:GetSequence())
-			Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+id,e,0,tp,tp,0)
-			tc:RegisterFlagEffect(id+tc:GetSequence(),RESET_EVENT+RESETS_STANDARD,0,1)
-		end
-	end
+function s.cond(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_PZONE)
 end
 function s.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x8) and c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

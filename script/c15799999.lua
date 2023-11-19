@@ -41,7 +41,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.penop)
 	c:RegisterEffect(e3)
 end
-
+s.pendulum_level=4
 function s.sfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x994)
 end

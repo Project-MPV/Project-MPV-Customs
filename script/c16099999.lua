@@ -66,6 +66,7 @@ function s.initial_effect(c)
 	e7:SetTarget(s.splimit)
 	c:RegisterEffect(e7)
 end
+s.pendulum_level=5
 function s.splimit(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0x994) and (sumtp&SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
