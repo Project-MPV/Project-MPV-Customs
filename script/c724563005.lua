@@ -44,7 +44,7 @@ function s.spfilter(c,e,tp)
 	return c:IsType(TYPE_FLIP) and c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function s.cfilter(c,tp)
-	return (c:IsPreviousPosition(POS_FACEUP) or c:IsPreviousPosition(POS_FACEDOWN)) and (c:IsFaceup() or c:IsFacedown()) and c:IsControler(tp)
+	return (c:IsPreviousPosition(POS_FACEUP) and c:IsFacedown()) or (c:IsPreviousPosition(POS_FACEDOWN) and c:IsFaceup()) and c:IsControler(tp)
 end
 function s.nefilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet() 
@@ -79,7 +79,7 @@ function s.spfilter2(c,e,tp)
 end
 function s.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsReleasableByEffect() end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_MZONE,0,1,nil) 
+	if chk==0 then return Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,LOCATION_MZONE,0,1,nil) 
 	and Duel.IsExistingTarget(Card.IsReleasableByEffect,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g1=Duel.SelectTarget(tp,Card.IsReleasableByEffect,tp,LOCATION_MZONE,0,1,1,nil)
