@@ -90,9 +90,10 @@ function s.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.trop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetTargetCards(e)
+	Duel.Release(tc,REASON_EFFECT)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local sc=Duel.SelectMatchingCard(tp,s.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
-	if sc and Duel.Release(tc,REASON_EFFECT)
-	and Duel.SpecialSummon(sc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEDOWN_DEFENSE) then
+	if sc and Duel.SpecialSummon(sc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEDOWN_DEFENSE) then
 	sc:CompleteProcedure()
 	end
 end
