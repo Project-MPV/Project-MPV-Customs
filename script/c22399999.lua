@@ -53,7 +53,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if tc and tc:IsRelateToEffect(e) then
 		local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,nil,tc:GetCode())
 		if #g>0 then
-			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+			Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_RULE)
 end
 end
 end
