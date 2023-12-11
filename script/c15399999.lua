@@ -59,23 +59,21 @@ end
 s.listed_series={0x994}
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
-	if g:IsExists(Card.IsSetCard,1,nil,0x994) and g:IsExists(Card.IsCode,1,nil,147)then
+	if g:IsExists(Card.IsSetCard,1,nil,0x994) and g:IsExists(Card.IsCode,1,nil,14799999)then
 	local reset=RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD
 		c:RegisterFlagEffect(id,reset,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end
 end
 function s.sdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_ONFIELD) and chkc:IsAbleToDeck() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,nil)
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_RTODECK,g,#g,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 end
 function s.sdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then 
-		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 	end
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
