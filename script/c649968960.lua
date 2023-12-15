@@ -16,7 +16,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0xfc13}
 function s.sfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and (c:GetAttack()~=c:GetBaseAttack() or c:GetDefense()~=c:GetBaseDefense())
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and (c:GetAttack()~=c:GetBaseAttack() or c:GetDefense()~=c:GetBaseDefense()) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function s.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.sfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) end
