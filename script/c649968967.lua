@@ -21,6 +21,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
 end
+s.miracle_synchro_fusion=true
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsNegatableMonster() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end

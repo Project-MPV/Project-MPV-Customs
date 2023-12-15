@@ -51,6 +51,7 @@ function s.initial_effect(c)
 	e5:SetTargetRange(0,1)
 	c:RegisterEffect(e5)
 end
+s.miracle_synchro_fusion=true
 function s.indval(e,re,tp)
 	return tp~=e:GetHandlerPlayer()
 end
