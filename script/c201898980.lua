@@ -30,7 +30,7 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
 function s.filter(c)
-	return c:IsSetCard(0x303) and c:CanAttack() and not c:IsHasEffect(EFFECT_EXTRA_ATTACK)
+	return c:IsSetCard(0x303) and c:IsCanBeEffectTarget() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function s.cfilter(c)
 	return c:IsAbleToDeck() and s.filter
@@ -50,30 +50,35 @@ function s.act(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	local c=e:GetHandler()
 	if #g>0 then
-		--Can make a second attack
+		--
 		local e1=Effect.CreateEffect(c)
-		e1:SetCategory(CATEGORY_TOGRAVE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetDescription(aux.Stringid(id,2))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 		e1:SetRange(LOCATION_MZONE)
+		e1:SetCondition(s.sco)
 		e1:SetTarget(s.stg)
 		e1:SetOperation(s.sop)	
 		e1:SetValue(1)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)		
+		tc:RegisterEffect(e1)		
 end
+end
+function s.sco(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return Duel.GetAttacker()==c or (Duel.GetAttackTarget() and Duel.GetAttackTarget()==c)
 end
 function s.stg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) end
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) end	
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function s.sop(e,tp,eg,ep,ev,re,r,rp)
-local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
+end
 end
 function s.sfilter(c)
 	return c:IsSetCard(0x303) and c:IsMonster() and c:IsLevelAbove(5) and c:IsAbleToHand()
