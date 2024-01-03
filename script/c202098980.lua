@@ -51,13 +51,15 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local bc=Duel.GetBattleMonster(tp)
-	return bc and bc:IsFaceup() and bc:IsSetCard(0x303)
+	local bc1,bc2=Duel.GetBattleMonster(tp)
+	if not (bc1 and bc1:IsFaceup() and bc1:IsSetCard(0x303)) then return false end
+	if not (bc2 and bc2:IsFaceup()) then return false end
+	return true
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local _,bc=Duel.GetBattleMonster(tp)
-		local a=Duel.GetAttacker()
+	local a=Duel.GetAttacker()
 	local t=Duel.GetAttackTarget()
 	local g=Group.FromCards(a,t)
 	local dam=math.abs(a:GetAttack()-t:GetAttack())
