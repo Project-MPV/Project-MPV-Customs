@@ -12,6 +12,16 @@ function s.initial_effect(c)
 	e1:SetCondition(s.spcon)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	--
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_BE_BATTLE_TARGET)
+	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e2:SetCondition(s.co)
+	e2:SetTarget(s.t)
+	e2:SetOperation(s.o)
+	c:RegisterEffect(e2)
 end
 s.listed_series={0x303}
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -50,4 +60,20 @@ end
 end
 function s.ssop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(e:GetHandler(),nil,1,REASON_EFFECT)
+end
+function s.co(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	return tc:IsControler(tp) and tc:IsFaceup() and tc:IsSetCard(0x303)
+end
+function s.t(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+end
+function s.o(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local at=Duel.GetAttacker()
+	local rt=Duel.GetAttackTarget()
+	local atk=rt:GetAttack()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	at:UpdateAttack(-atk,RESET_EVENT|RESETS_STANDARD)
 end
