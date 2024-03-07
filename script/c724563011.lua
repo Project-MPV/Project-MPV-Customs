@@ -32,7 +32,7 @@ function s.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function s.trop(e,tp,eg,ep,ev,re,r,rp)
-	local ck=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_EXTRA,1,nil,tp,POS_FACEUP)
+	local ck=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_DECK,1,nil,tp,POS_FACEUP)
 		and Duel.IsExistingMatchingCard(s.fycon,tp,LOCATION_MZONE,0,1,nil)
 	--
 	local g=Duel.SelectMatchingCard(tp,aux.FaceupFilter(Card.IsDestructable),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
