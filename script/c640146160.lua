@@ -58,17 +58,24 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local nevermind=e:GetHandler()
 	if Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)~=0 then
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.stfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SSet(tp,tc)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+	local smash=g:GetFirst()
+	if smash then
+		Duel.SSet(tp,smash)
+		local do_di_do=Effect.CreateEffect(nevermind)
+		do_di_do:SetType(EFFECT_TYPE_SINGLE)
+		do_di_do:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		do_di_do:SetCode(EFFECT_BECOME_QUICK)
+		do_di_do:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		smash:RegisterEffect(do_di_do)
+		local what_did_you_expect=Effect.CreateEffect(nevermind)
+		what_did_you_expect:SetType(EFFECT_TYPE_SINGLE)
+		what_did_you_expect:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+		what_did_you_expect:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		what_did_you_expect:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		smash:RegisterEffect(what_did_you_expect)
 end
 end
 end
