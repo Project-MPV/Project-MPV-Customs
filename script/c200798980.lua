@@ -58,7 +58,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function s.filter(c)
-	return c:IsType(TYPE_EFFECT) and c:IsLevelBelow(4) and c:IsAbleToDeck() and aux.SpElimFilter(c,true)
+	return c:IsSetCard(0x303) and c:IsLevelBelow(4) and c:IsAbleToDeck() and aux.SpElimFilter(c,true)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and s.filter(chkc) end
