@@ -1,5 +1,5 @@
 --Dark Templar Dragon
-
+Duel.LoadScript("user_cards_specific_functions.lua")
 local s,id=GetID()
 function s.initial_effect(c)
 c:SetUniqueOnField(1,0,id)
