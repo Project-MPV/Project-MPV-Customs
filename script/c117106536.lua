@@ -12,7 +12,7 @@ c:SetUniqueOnField(1,0,id)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(s.splimit)
+	e1:SetValue(aux.DarkLightFLimit)
 	c:RegisterEffect(e1)
 	--copy
 	local e2=Effect.CreateEffect(c)
