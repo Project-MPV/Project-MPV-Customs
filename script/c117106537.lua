@@ -4,10 +4,10 @@ local s,id=GetID()
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,id)
 	c:SetSPSummonOnce(id)
+	Auxiliary.addLizardCheck(c)
 	--fusion material
 	c:EnableReviveLimit()
 	Fusion.AddProcFun2(c,s.ffilter,s.ffilter1,true)
-	Auxiliary.addLizardCheck(c)
 	--cannot be summon material
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)

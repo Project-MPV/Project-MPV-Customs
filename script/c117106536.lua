@@ -3,10 +3,10 @@ Duel.LoadScript("user_cards_specific_functions.lua")
 local s,id=GetID()
 function s.initial_effect(c)
 c:SetUniqueOnField(1,0,id)
+Auxiliary.addLizardCheck(c)
 	--fusion material
 	c:EnableReviveLimit()
 	Fusion.AddProcFun2(c,s.ffilter1,s.ffilter,true)
-	Auxiliary.addLizardCheck(c)
 	--Special Summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
