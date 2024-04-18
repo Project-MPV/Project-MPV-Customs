@@ -83,12 +83,10 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil)	
 	if rd then
 	local tc=Duel.SelectMatchingCard(tp,s.matfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local rd=Duel.SelectMatchingCard(tp,Card.IsAttribute,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_DARK)
 	if tc and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
-	Duel.HintSelection(tc)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local sg=Duel.SelectMatchingCard(tp,Card.IsAttribute,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_DARK)
-	if #sg>0 then
-	Duel.Overlay(tc,sg)
+	if Duel.HintSelection(tc)~=0 then
+	Duel.Overlay(tc,rd)
 end
 end
 end
