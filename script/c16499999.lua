@@ -131,7 +131,7 @@ function s.atkcond2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.rtfilter2,1,nil,e,tp) and not eg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.FilterFaceupFunction(Card.IsSetCard,0x994),tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsSetCard,0x994),tp,LOCATION_MZONE,0,nil)
 	local tc=g:GetFirst()
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(e:GetHandler())

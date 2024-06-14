@@ -1,4 +1,4 @@
---Chaos-Eyes Rank-Up-Magic Advance
+--Rank-Up-Magic Enigma Symbol
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -16,6 +16,9 @@ function s.initial_effect(c)
 s.listed_series={0x344}
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()&PHASE_MAIN1+PHASE_MAIN2>0
+end
+function s.filter(c)
+	return not c:IsStatus(STATUS_LEAVE_CONFIRMED) and c:IsAbleToChangeControler()
 end
 function s.filter1(c,e,tp)
 	local rk=c:GetRank()
@@ -54,19 +57,11 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
 	if c:IsRelateToEffect(e) and c:IsFaceup() then
-	local c=e:GetHandler()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
-		local g=Duel.SelectMatchingCard(tp,s.filter,tp,0,LOCATION_SZONE,1,1,nil)
-		Duel.HintSelection(g)
-		if #g>0 and not g:GetFirst():IsImmuneToEffect(e) then
-			local og=g:GetFirst():GetOverlayGroup()
-			if #og>0 then
-				Duel.SendtoGrave(og,REASON_RULE)
-			end
-			Duel.Overlay(sc,g)
-function s.filter(c)
-	return c:IsAbleToChangeControler() 
-end
+		local fg=Duel.SelectMatchingCard(tp,s.filter,tp,0,LOCATION_SZONE,1,1,nil)
+		Duel.HintSelection(fg)
+		if #fg>0 and not fg:GetFirst():IsImmuneToEffect(e) then
+		Duel.Overlay(sc,fg)
 end
 end
 end
