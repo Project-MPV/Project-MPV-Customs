@@ -30,7 +30,7 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
 function s.filter(c)
-	return c:IsSetCard(0x303) and c:IsCanBeEffectTarget() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return c:IsFaceup() and c:IsSetCard(0x303) and c:IsCanBeEffectTarget() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function s.cfilter(c)
 	return c:IsAbleToDeck() and s.filter
