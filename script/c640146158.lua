@@ -79,15 +79,15 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 	rc:RegisterEffect(e1)
-	local rd=Duel.IsExistingMatchingCard(Card.IsAttribute,tp,LOCATION_GRAVE,0,1,nil,ATTRIBUTE_DARK)
+	end
+	local td=Duel.IsExistingMatchingCard(Card.IsAttribute,tp,LOCATION_GRAVE,0,1,nil,ATTRIBUTE_DARK)
 	and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil)	
-	if rd then
+	if td then
 	local tc=Duel.SelectMatchingCard(tp,s.matfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 	local rd=Duel.SelectMatchingCard(tp,Card.IsAttribute,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_DARK)
-	if tc and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
+	if rd and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
 	if Duel.HintSelection(tc)~=0 then
 	Duel.Overlay(tc,rd)
-end
 end
 end
 end
