@@ -46,7 +46,7 @@ function s.ritlimit(e,se,sp,st)
 	return true
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsCanTurnSet() and c:IsSSetable(true)
+	return c:IsFaceup() and c:IsCanTurnSet() and not (c:IsOriginalType(TYPE_MONSTER) and c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_PZONE))
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
