@@ -57,8 +57,11 @@ end
 function s.cfilter(c,e,tp)
 	return c:IsSetCard(0x344) and c:IsAbleToRemoveAsCost() and aux.SpElimFilter(c,true) 
 end
-function s.matfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_XYZ)
+function s.attachfilter(c,tp)
+	return c:IsAttribute(ATTRIBUTE_DARK) and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil,c,tp)
+end
+function s.xyz(c,mc,tp)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_XYZ) and mc:IsCanBeXyzMaterial(c,tp,REASON_EFFECT)
 end
 function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -79,16 +82,15 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 	rc:RegisterEffect(e1)
-	end
-	local td=Duel.IsExistingMatchingCard(Card.IsAttribute,tp,LOCATION_GRAVE,0,1,nil,ATTRIBUTE_DARK)
-	and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil)	
-	if td then
-	local tc=Duel.SelectMatchingCard(tp,s.matfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-	local rd=Duel.SelectMatchingCard(tp,Card.IsAttribute,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_DARK)
-	if rd and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
-	if Duel.HintSelection(tc)~=0 then
-	Duel.Overlay(tc,rd)
 end
+	if Duel.IsExistingMatchingCard(s.attachfilter,tp,LOCATION_GRAVE,0,1,nil,tp) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACH)
+	local mc=Duel.SelectMatchingCard(tp,s.attachfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local xyzc=Duel.SelectMatchingCard(tp,s.xyz,tp,LOCATION_MZONE,0,1,1,nil,mc,tp):GetFirst()
+	if not xyzc:IsImmuneToEffect(e) then
+	Duel.BreakEffect()
+	Duel.Overlay(xyzc,mc)
 end
 end
 end
