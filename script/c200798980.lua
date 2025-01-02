@@ -31,6 +31,7 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(s.condition)
 	e3:SetCost(s.cost)
 	e3:SetTarget(s.target)
 	e3:SetOperation(s.operation)
@@ -52,6 +53,9 @@ end
 function s.hdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,2)
 	Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
+end
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsAbleToEnterBP()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(id)==0 end
