@@ -71,12 +71,12 @@ function s.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
 	local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(ct*300)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,ct*300)
+	Duel.SetTargetParam(ct*100)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,ct*100)
 end
 function s.trop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*300)
+	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-ct*100)
 end
 function s.flipfilter(c)
 	return c:IsFaceup() and (c:IsType(TYPE_FLIP) and c:IsMonster())
