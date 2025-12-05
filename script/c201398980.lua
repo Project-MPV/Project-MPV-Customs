@@ -27,7 +27,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp and re:IsActiveType(TYPE_MONSTER)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	and ep~=tp and re:IsActiveType(TYPE_MONSTER)
 end
 function s.spfilter(c,e,tp)
 return c:IsCode(200198980) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
