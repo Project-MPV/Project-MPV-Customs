@@ -21,7 +21,7 @@ function s.ffilter(c,fc,sumtype,tp)
 	return c:IsSetCard(0x303) or c:IsSetCard(0x344)
 end
 function s.banish(c)
-	return c:IsAbleToRemove() and (c:IsSetCard(0x303) or c:IsSetCard(0x344))
+	return c:IsAbleToRemove() 
 end
 function s.rfilter(c)
 	return c:IsLocation(LOCATION_REMOVED)
