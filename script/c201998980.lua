@@ -74,6 +74,7 @@ function s.o(e,tp,eg,ep,ev,re,r,rp)
 	local rt=Duel.GetAttackTarget()
 	local atk=rt:GetAttack()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	at:UpdateAttack(-atk,RESET_EVENT|RESETS_STANDARD)
+end
 end
