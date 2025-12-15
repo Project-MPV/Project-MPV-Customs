@@ -8,10 +8,16 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(s.cost)
+	e1:SetCondition(s.con)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	e1:SetHintTiming(0,TIMING_BATTLE_START)
 	c:RegisterEffect(e1)
+end
+s.listed_names={200898980}
+s.listed_series={0x303}
+function s.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsCode,200898980),tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.sfilter(c)
 	return c:IsSetCard(0x303) and c:IsLevelBelow(4) and c:IsAbleToGraveAsCost()
@@ -90,7 +96,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local d=e:GetLabelObject()
 		if d:IsRelateToBattle() and d:IsControler(1-tp) then
-		if Duel.SetLP(1-tp,Duel.GetLP(1-tp)-800)~=0 then
+		if Duel.SetLP(1-tp,Duel.GetLP(1-tp)-400)~=0 then
 		Duel.SendtoDeck(d,nil,1,REASON_EFFECT)			
 		end
 	end
