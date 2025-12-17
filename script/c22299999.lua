@@ -21,7 +21,6 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCondition(s.pencon)
 	e2:SetTarget(s.pentg)
 	e2:SetOperation(s.penop)
 	c:RegisterEffect(e2)
@@ -54,10 +53,6 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	local a,b=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if a<1 or not g or not g:IsRelateToEffect(e) then return end
 	Duel.MoveToField(g,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-end
-function s.pencon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return (r&REASON_EFFECT)~=0
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end

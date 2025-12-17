@@ -3,7 +3,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,id)
 	--Xyz summon
-	Xyz.AddProcedure(c,nil,9,2,nil,nil,99)
+	Xyz.AddProcedure(c,nil,9,2,nil,nil,Xyz.InfiniteMats)
 	c:EnableReviveLimit()
 	-- Check materials on Xyz Summon
 	local e1=Effect.CreateEffect(c)

@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	--Must be properly summoned before reviving
 	c:EnableReviveLimit()
 	--Xyz summon procedure
-	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsAttribute,ATTRIBUTE_DARK),5,3,nil,nil,99)
+	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsAttribute,ATTRIBUTE_DARK),5,3,nil,nil,Xyz.InfiniteMats)
 	Pendulum.AddProcedure(c)
 	--Check materials used for its Xyz summon
 	local e1=Effect.CreateEffect(c)
