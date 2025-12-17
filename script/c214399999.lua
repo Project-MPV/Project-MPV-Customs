@@ -42,11 +42,11 @@ function s.ovfilter(c,tp,xyzc)
 	return c:IsSummonCode(xyzc,SUMMON_TYPE_XYZ,tp,15799999) and c:IsFaceup()
 end
 function s.eafilter(c,tp)
-	return c:IsSetCard(0x993) and c:IsFaceup()
+	return c:IsSetCard(0x993) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost() 
 end
 function s.xyzop(e,tp,chk,mc)
 	if chk==0 then return not Duel.HasFlagEffect(tp,id) and Duel.IsExistingMatchingCard(s.eafilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sc=Duel.GetMatchingGroup(s.eafilter,tp,LOCATION_ONFIELD,0,nil):SelectUnselect(Group.CreateGroup(),tp,false,Xyz.ProcCancellable)
 	if sc and Duel.Remove(sc,POS_FACEUP,REASON_COST)>0 then
 		return Duel.RegisterFlagEffect(tp,id,RESET_PHASE|PHASE_END,EFFECT_FLAG_OATH,1)
