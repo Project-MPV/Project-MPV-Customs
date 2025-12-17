@@ -42,7 +42,7 @@ function s.ovfilter(c,tp,xyzc)
 	return c:IsSummonCode(xyzc,SUMMON_TYPE_XYZ,tp,15799999) and c:IsFaceup()
 end
 function s.eafilter(c,tp)
-	return c:IsSetCard(0x993) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost() 
+	return c:IsSetCard(0x993) and c:IsFaceup() and c:IsAbleToRemoveAsCost() 
 end
 function s.xyzop(e,tp,chk,mc)
 	if chk==0 then return not Duel.HasFlagEffect(tp,id) and Duel.IsExistingMatchingCard(s.eafilter,tp,LOCATION_ONFIELD,0,1,nil) end
