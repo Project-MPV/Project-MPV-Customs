@@ -52,7 +52,7 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	if not bc then return false end
 	if tc:IsControler(1-tp) then tc,bc=bc,tc end
 	if tc:IsFaceup() and (tc:IsSetCard(0xfc13) and tc:IsType(TYPE_SYNCHRO)) or 
-	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsType(TYPE_SYNCHRO)) then
+	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsRace(RACE_WYRM) and tc:IsType(TYPE_SYNCHRO)) then
 		e:SetLabelObject(bc)
 		return true
 	else return false end
