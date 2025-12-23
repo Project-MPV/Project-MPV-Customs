@@ -47,7 +47,8 @@ end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	if tc and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() 
+	and tc:IsType(TYPE_EFFECT) and not tc:IsDisabled()then
 			--Negate its effects
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -69,10 +70,9 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EFFECT_CANNOT_ATTACK)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
-	end
-	end
-	end
-
+end
+end
+end
 
 function s.indtg(e,c)
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsType(TYPE_FUSION)
