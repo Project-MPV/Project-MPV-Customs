@@ -1,4 +1,4 @@
---Chaos-Eyes Spirit Barrier
+--Enigmation Spirit Barrier
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate and Special Summon from GY
@@ -8,7 +8,7 @@ function s.initial_effect(c)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(s.target)
 	c:RegisterEffect(e1)
-	--cannot target by monster
+	--cannot target by monster, except
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_SZONE)
@@ -19,11 +19,11 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetValue(s.tgval)
+	e3:SetValue(s.efilter1)
 	c:RegisterEffect(e3)
-	local e4=e2:Clone()
+	local e4=e3:Clone()
 	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e4:SetValue(s.efilter)
+	e4:SetValue(s.efilter2)
 	c:RegisterEffect(e4)
 	--spsummon
 	local e5=Effect.CreateEffect(c)
@@ -66,11 +66,11 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function s.tgval(e,re,rp)
-	return re:IsActiveType(TYPE_EFFECT)
+function s.efilter1(e,re,rp)
+	return rp==1-e:GetHandlerPlayer() and re:IsMonsterEffect()
 end
-function s.efilter(e,re)
-	return re:IsActiveType(TYPE_EFFECT)
+function s.efilter2(e,te)
+	return te:GetHandlerPlayer()~=e:GetHandlerPlayer() and te:IsMonsterEffect()
 end
 
 function s.cfilter(c,e,tp)
