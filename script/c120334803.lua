@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
+	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.thcon)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
@@ -33,7 +33,7 @@ function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:GetBaseAttack()~=c:GetAttack()
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:GetAttack()~=c:GetBaseAttack()
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.atkfilter(chkc) end
