@@ -1,9 +1,9 @@
 --Eternity Ace - Chrono Zereya 
 local s,id=GetID()
 function s.initial_effect(c)
-	c:EnableReviveLimit()
 	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsSetCard,0x994),7,3,s.ovfilter,aux.Stringid(id,0),3,s.xyzop,Xyz.InfiniteMats)
 	Pendulum.AddProcedure(c,false)
+	c:EnableReviveLimit()
 	--Special summon by its own method
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
@@ -60,7 +60,7 @@ end
 function s.sprfilter1(c,tp,g,sc)
 	local lv=c:GetLevel()
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_MZONE,0,nil)
-	return (c:IsFaceup() and not c:IsType(TYPE_TOKEN)) and c:IsType(TYPE_XYZ) and g:IsExists(s.sprfilter2,1,c,tp,c,sc,lv)
+	return (c:IsFaceup() and not c:IsType(TYPE_TOKEN)) and g:IsExists(s.sprfilter2,1,c,tp,c,sc,lv)
 end
 function s.sprfilter2(c,tp,mc,sc,lv)
 	local sg=Group.FromCards(c,mc)
@@ -141,12 +141,13 @@ function s.pencon(e,tp,eg,ep,ev,re,r,rp)
 	return (r&REASON_EFFECT+REASON_BATTLE)~=0 and c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)>0 end
+	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 end
 function s.penop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
+	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and e:GetHandler():IsRelateToEffect(e) then
+		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
