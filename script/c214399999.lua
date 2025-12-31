@@ -8,7 +8,7 @@ function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
 	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetRange(LOCATION_PZONE)
 	e0:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
@@ -55,16 +55,16 @@ function s.xyzop(e,tp,chk,mc)
 	end
 end
 function s.sprfilter(c,e)
-	return c:IsFaceup() and c:IsMonster() and c:IsCanBeXyzMaterial()
+	return c:IsFaceup() and c:IsMonster() and c:GetLevel() and c:IsCanBeXyzMaterial()
 end
 function s.sprfilter1(c,tp,g,sc)
 	local lv=c:GetLevel()
-	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_MZONE,0,nil,lv)
 	return (c:IsFaceup() and not c:IsType(TYPE_TOKEN)) and g:IsExists(s.sprfilter2,1,c,tp,c,sc,lv)
 end
 function s.sprfilter2(c,tp,mc,sc,lv)
 	local sg=Group.FromCards(c,mc)
-	return (c:GetLevel()+mc:GetLevel())==7 
+	return c:GetLevel()+mc:GetLevel()==7 
 end
 function s.sprcon(e,c)
 	if c==nil then return true end
@@ -95,7 +95,7 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	if not g then return end
 	local og=Group.CreateGroup()
 	for tc in aux.Next(g) do
-		if tc:IsType(TYPE_XYZ) then
+		if tc:IsCanBeXyzMaterial() then
 			og:Merge(tc:GetOverlayGroup())
 		end
 	end
