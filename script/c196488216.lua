@@ -109,8 +109,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(76922029,0))
-		local op=Duel.SelectOption(tp,aux.Stringid(2137678,0),aux.Stringid(id,2))
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
+		local op=Duel.SelectOption(tp,aux.Stringid(id,3),aux.Stringid(id,2))
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		if op==0 then
