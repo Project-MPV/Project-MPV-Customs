@@ -148,8 +148,8 @@ end,
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(96488216,0))
-		local op=Duel.SelectOption(tp,aux.Stringid(96488216,3),aux.Stringid(96488216,2))
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(196488216,0))
+		local op=Duel.SelectOption(tp,aux.Stringid(196488216,3),aux.Stringid(196488216,2))
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		if op==0 then
@@ -170,7 +170,7 @@ end,
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(96488215,0))
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(196488215,0))
 		local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
