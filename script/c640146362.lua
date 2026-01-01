@@ -29,19 +29,19 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x344}
-s.listed_names={96488218,96488216,96488199}
+s.listed_names={196488218,196488216,196488199}
 function s.recfilter(c)
 	return c:IsSetCard(0x344) and c:IsMonster() 
 	and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToDeck()
 end
 function s.monfilter(c)
-	return c:IsFaceup() and (c:IsCode(96488218,96488216,96488199) or c:ListsCode(96488218,96488216,96488199)) and c:IsType(TYPE_EXTRA)
+	return c:IsFaceup() and (c:IsCode(196488218,196488216,196488199) or c:ListsCode(196488218,196488216,196488199)) and c:IsType(TYPE_EXTRA)
 	and s.effect_map[c:GetCode()]~=nil
 end
 --Really make you wonder...
 s.effect_map={
 	--Enigmation - Spectre Dragon
-	[96488199]=function(e,tp,tc) 
+	[196488199]=function(e,tp,tc) 
 	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
@@ -75,7 +75,7 @@ s.effect_map={
 	end
 end,
 	--Enigmation - Phantasm Dragon
-	[96488201]=function(e,tp,tc)
+	[196488201]=function(e,tp,tc)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,nil)
 		local tc=g:GetFirst()
@@ -87,7 +87,7 @@ end,
 	end
 end,
 	--Enigmation - Overcharge Dragon
-	[96488218]=function(e,tp,tc)
+	[196488218]=function(e,tp,tc)
 	local g=Duel.SelectTarget(tp,Card.IsNegatableMonster,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 	local c=e:GetHandler()
@@ -118,7 +118,7 @@ end,
 	end
 end,
 	--Enigmation - Over Burst Dragon
-	[96488219]=function(e,tp,tc)
+	[196488219]=function(e,tp,tc)
 	local g=Duel.GetMatchingGroup(Card.IsNegatableMonster,tp,0,LOCATION_MZONE,nil)
 	local tc=g:GetFirst()
 	for tc in aux.Next(g) do
@@ -139,7 +139,7 @@ end,
 end
 end,
 	--Enigmation - Spectral General
-	[96488216]=function(e,tp,tc)
+	[196488216]=function(e,tp,tc)
 	function s.sum(c)
 	return c:IsFaceup() and (c:HasNonZeroAttack() or c:HasNonZeroDefense())
 	end
@@ -164,7 +164,7 @@ end,
 end
 end,
 	--Enigmation - Spectral Genesis
-	[96488215]=function(e,tp,tc)
+	[196488215]=function(e,tp,tc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=g:GetFirst()
