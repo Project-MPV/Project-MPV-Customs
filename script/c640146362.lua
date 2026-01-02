@@ -165,6 +165,9 @@ end
 end,
 	--Enigmation - Spectral Genesis
 	[196488215]=function(e,tp,tc)
+	function s.sum(c)
+	return c:IsFaceup() and (c:HasNonZeroAttack() or c:HasNonZeroDefense())
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=g:GetFirst()
