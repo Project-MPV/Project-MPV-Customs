@@ -68,7 +68,7 @@ function s.rtfilter(c,ft,tp)
 end
 function s.t(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.rtfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler())
-	and Duel.IsPlayerCanDraw(tp,2) end
+	and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function s.o(e,tp,eg,ep,ev,re,r,rp)
@@ -78,11 +78,17 @@ function s.o(e,tp,eg,ep,ev,re,r,rp)
 	Duel.HintSelection(g)
 	if Duel.SendtoDeck(g,nil,1,REASON_EFFECT)~=0 then
 	Duel.Draw(tp,1,REASON_EFFECT)
-	e:GetHandler():UpdateAttack(400,RESET_EVENT|RESETS_STANDARD)	
+	e:GetHandler():UpdateAttack(400,RESET_EVENT|RESETS_STANDARD)
+	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil)
+	and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	local rt=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	if rt then
+	Duel.SendtoDeck(rt,nil,1,REASON_EFFECT)
 end
 end
 end
-
+end
+end
 function s.dcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 		and (e:GetLabelObject():GetLabel()&RACE_DRAGON)~=0
@@ -118,7 +124,7 @@ function s.o1(e,tp,eg,ep,ev,re,r,rp)
 	local fg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 	if #fg>0 then
 	Duel.HintSelection(fg)
-	fg:GetFirst():UpdateAttack(-1000,RESET_EVENT|RESETS_STANDARD)	
+	fg:GetFirst():UpdateAttack(-1500,RESET_EVENT|RESETS_STANDARD)	
 end
 end
 end
