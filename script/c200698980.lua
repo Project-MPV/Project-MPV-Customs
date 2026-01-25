@@ -18,8 +18,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x303}
-function s.fextra(e,tp,mg)
-	return Duel.GetMatchingGroup(Fusion.IsMonsterFilter(Card.IsAbleToDeck),tp,LOCATION_HAND,0,nil)
+function s.fextra(e,tp,g,mg)
+	return Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re then return false end
@@ -29,8 +29,8 @@ end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

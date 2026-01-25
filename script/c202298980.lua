@@ -1,10 +1,11 @@
---Imaginary Force Wish
+--Imaginary Force Warcry
 local s,id=GetID()
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
+	e0:SetCountLimit(1,{id,0})
 	e0:SetCost(s.cost)
 	e0:SetTarget(s.t)
 	e0:SetOperation(s.a)
@@ -13,12 +14,11 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCode(EVENT_TO_DECK)
-	e1:SetCountLimit(1,id)
+	e1:SetCountLimit(1,{id,1})
 	e1:SetCondition(s.con)
-	e1:SetTarget(s.tg)
 	e1:SetOperation(s.op)
 	c:RegisterEffect(e1)
 end
@@ -55,7 +55,6 @@ function s.a(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetValue(e:GetLabel())
 		e0:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END)
 		tc:RegisterEffect(e0)
-	end
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(3101)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -65,6 +64,7 @@ function s.a(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(s.efilter)
 		e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END)
 		tc:RegisterEffect(e1)
+end
 end
 function s.efilter(e,te)
 	return te:IsMonsterEffect() and e:GetHandler()~=te:GetOwner()
@@ -76,27 +76,20 @@ end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.afilter,1,nil,tp)
 end
-function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
-end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	-- delayed End Phase add
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetCondition(s.thcon)
-	e1:SetOperation(s.thop)
-	e1:SetReset(RESET_PHASE|PHASE_END)
+	e1:SetOperation(function()
+		if c:IsAbleToHand() then
+			Duel.SendtoHand(c,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,c)
+		end
+	end)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-end
-
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAbleToHand()
-end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,id)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local c=e:GetHandler()
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,c)
 end
