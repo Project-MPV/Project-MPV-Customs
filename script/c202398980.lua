@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_GRAVE+LOCATION_DECK)
 	e1:SetCode(EVENT_TO_DECK)
-	e1:SetCountLimit(1,{id,0})
+	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.con)
 	e1:SetTarget(s.tg)
 	e1:SetOperation(s.op)
@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_DECK)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,{id,0})
+	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.c)
 	e2:SetTarget(s.t)
 	e2:SetOperation(s.o)
@@ -32,7 +32,10 @@ function s.initial_effect(c)
 end
 s.listed_series={0x303}
 function s.cfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:GetOriginalLevel()>=8 and c:IsSetCard(0x303)
+	return c:IsSetCard(0x303)
+		and c:GetOriginalLevel()>=8
+		and c:IsPreviousLocation(LOCATION_MZONE)
+		and c:IsLocation(LOCATION_DECK)
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp)
@@ -48,18 +51,17 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 --
-function s.rtfilter(c,e,tp)
-	return c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) and c:IsReason(REASON_EFFECT)
+function s.rtfilter(c)
+	return c:IsReason(REASON_EFFECT)
+		and c:IsLocation(LOCATION_DECK)
+		and not c:IsPreviousLocation(LOCATION_HAND)
 end
 function s.rvfilter(c)
 	return c:IsSetCard(0x303)
 end
 function s.c(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.rtfilter,1,nil,e,tp) and 
-	Duel.IsExistingMatchingCard(s.rvfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) 
-end
-function s.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x303) and c:IsAbleToGrave()
+	Duel.IsExistingMatchingCard(s.rvfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function s.t(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() end
