@@ -1,4 +1,4 @@
---Imaginary Sovereignty Dragon
+--Imaginary Force - Sovereignty Dragon
 local s,id=GetID()
 function s.initial_effect(c)
 	--Special summon from hand
@@ -9,7 +9,6 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.spcon)
-	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	--extra attack on monster
@@ -23,33 +22,23 @@ function s.initial_effect(c)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
 end
-function s.spfilter(c,ft)
-	return c:IsSetCard(0x303) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() 
+function s.revfilter(c)
+	return c:IsSetCard(0x303) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function s.spcon(e,c)
 	if c==nil then return true end
 	local tp=e:GetHandlerPlayer()
-	local rg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND,0,e:GetHandler())
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #rg>0 and aux.SelectUnselectGroup(rg,e,tp,2,2,nil,0)
-end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,c)
-	local c=e:GetHandler()
-	local g=nil
-	local rg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND,0,e:GetHandler())
-	local g=aux.SelectUnselectGroup(rg,e,tp,2,2,nil,2,tp,HINTMSG_TODECK,nil,nil,true)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 then
-		g:KeepAlive()
-		e:SetLabelObject(g)
-		return true
-	end
-	return false
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.revfilter,tp,LOCATION_HAND,0,2,e:GetHandler())
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	if not g then return end
-	Duel.ConfirmCards(1-tp,g)
-	Duel.SendtoDeck(g,nil,1,REASON_COST)
-	g:DeleteGroup()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,s.revfilter,tp,LOCATION_HAND,0,2,2,e:GetHandler())
+	if #g==2 then
+		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleHand(tp)
+		Duel.SendtoDeck(g,nil,2,REASON_COST)
+	end
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
