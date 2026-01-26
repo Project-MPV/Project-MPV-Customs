@@ -22,9 +22,9 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetCode(EVENT_TO_DECK)
-	e3:SetCountLimit(1,id+2)
+	e3:SetCountLimit(1,{id,1})
 	e3:SetCondition(s.drcon)
 	e3:SetTarget(s.drtg)
 	e3:SetOperation(s.drop)
@@ -58,9 +58,11 @@ end
 end
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if not re then return false end
 	local rc=re:GetHandler()
 	return rc:IsSetCard(0x303)
+	and c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.filter(c)
 	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x303) and c:IsSSetable()
@@ -80,5 +82,5 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-end
+	end
 end

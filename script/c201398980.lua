@@ -1,3 +1,4 @@
+--Imaginary Force - Spirit Core, Svier
 local s,id=GetID()
 function s.initial_effect(c)
 	--I Summon Thee "Imaginary Force - Sovereignty Dragon", go brrrr
@@ -50,9 +51,11 @@ end
 end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp,c)
+	local c=e:GetHandler()
 	if not re then return false end
 	local rc=re:GetHandler()
-	return rc:IsSetCard(0x303) 
+	return rc:IsSetCard(0x303)
+	and c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.ssfilter(c,e,tp)
 	return c:IsSetCard(0x303) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -4,7 +4,6 @@ function s.initial_effect(c)
 	--Imaginary Force
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_TO_DECK)
@@ -28,9 +27,11 @@ function s.initial_effect(c)
 end
 s.listed_series={0x303}
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if not re then return false end
 	local rc=re:GetHandler()
 	return rc:IsSetCard(0x303)
+	and c:IsPreviousLocation(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.spfilter(c,e,tp)
 	return not c:IsCode(id) and c:IsSetCard(0x303) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
