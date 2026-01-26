@@ -37,7 +37,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	if #g==2 then
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleHand(tp)
-		Duel.SendtoDeck(g,nil,2,REASON_COST)
+		Duel.SendtoDeck(g,nil,1,REASON_COST)
 	end
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
