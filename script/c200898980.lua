@@ -31,11 +31,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x303}
---card returned to Deck/Extra by IF effect, and you control IF monster
+--card returned to Deck/Extra by IF, and you control IF monster
 function s.cfilter(c,tp)
 	return c:IsControler(tp)
-		and c:IsReason(REASON_EFFECT)
-		and c:IsReason(REASON_COST)
+		and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_COST))
 		and c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
 		and not c:IsPreviousLocation(LOCATION_HAND)
 end
