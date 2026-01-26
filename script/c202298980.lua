@@ -9,6 +9,7 @@ function s.initial_effect(c)
 	e0:SetCost(s.cost)
 	e0:SetTarget(s.t)
 	e0:SetOperation(s.a)
+	e0:SetHintTiming(0,TIMING_END_PHASE)
 	c:RegisterEffect(e0)
 	--
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +26,7 @@ end
 s.listed_series={0x303}
 s.check=false
 function s.ifilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(5) and c:IsSetCard(0x303) and c:IsMonster()
+	return c:IsFaceup() and c:IsSetCard(0x303) and c:IsMonster()
 end
 function s.tgfilter(c)
 	return c:IsSetCard(0x303) and c:IsMonster() and c:IsAbleToDeckAsCost() 
