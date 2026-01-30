@@ -43,10 +43,15 @@ end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
+function s.revcost(c)
+	return c:IsAbleToDeckAsCost() and not c:IsPublic()
+end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.revcost,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,s.revcost,tp,LOCATION_HAND,0,1,2,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 	ct=Duel.SendtoDeck(g,nil,1,REASON_COST)
 	e:SetLabel(ct)
 end
