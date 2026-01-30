@@ -55,7 +55,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 end
 function s.arfilter(c,ft)
-	return c:IsSetCard(0x303) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x303) and c:IsAbleToDeckAsCost() and not c:IsPublic()
 end
 function s.ssfilter(c,ft,e,tp)
 	return c:IsSetCard(0x303) and c:IsType(TYPE_MONSTER) and ((ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)) or c:IsAbleToHand())
@@ -64,8 +64,11 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.arfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.arfilter,tp,LOCATION_HAND,0,1,1,nil)
+	if #g>0 then
 	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 	Duel.SendtoDeck(g,nil,1,REASON_COST)
+end
 end
 function s.qstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)

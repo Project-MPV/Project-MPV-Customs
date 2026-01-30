@@ -32,6 +32,10 @@ function s.initial_effect(c)
 end
 s.listed_series={0x303}
 --card returned to Deck/Extra by IF, and you control IF monster
+function s.ifmonfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x303)
+end
+
 function s.cfilter(c,tp)
 	return c:IsControler(tp)
 		and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_COST))
@@ -41,8 +45,8 @@ end
 
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re or not re:GetHandler():IsSetCard(0x303) then return false end
+	if not Duel.IsExistingMatchingCard(s.ifmonfilter,tp,LOCATION_MZONE,0,1,nil) then return false end
 	return eg:IsExists(s.cfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0x303)
 end
 
 function s.thfilter(c)
