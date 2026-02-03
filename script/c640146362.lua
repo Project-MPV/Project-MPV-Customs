@@ -30,12 +30,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x344}
-s.listed_names={96488218,96488216,96488199}
+s.listed_names={196488218,196488216,196488199}
 function s.recfilter(c)
     return c:IsSetCard(0x344) and c:IsMonster() and c:IsAbleToDeck()
 end
 function s.monfilter(c)
-    return c:IsFaceup() and (c:IsCode(96488218,96488216,96488199) or c:ListsCode(96488218,96488216,96488199))
+    return c:IsFaceup() and (c:IsCode(196488218,196488216,196488199) or c:ListsCode(196488218,196488216,196488199))
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end
@@ -58,7 +58,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
         local code=tc2:GetOriginalCode()        
         -- APPLY EFFECT (Ignoring Cost & Condition)     
         --SPECTRE DRAGON
-        if code==96488199 then
+        if code==196488199 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
             local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
             local sc=g:GetFirst()
@@ -81,7 +81,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 Duel.Damage(1-tp,800,REASON_EFFECT)
             end            
         --SPECTRAL GENERAL
-        elseif code==96488216 then
+        elseif code==196488216 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
             local g=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
             local sc=g:GetFirst()
@@ -96,7 +96,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 sc:RegisterEffect(e1)
             end
         --OVERCHARGE DRAGON
-        elseif code==96488218 then
+        elseif code==196488218 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
             local g=Duel.SelectMatchingCard(tp,Card.IsNegatableMonster,tp,0,LOCATION_MZONE,1,1,nil)
             local sc=g:GetFirst()
@@ -122,7 +122,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 sc:RegisterEffect(e3)
 			end
            --SPECTRAL GENESIS
-        elseif code==96488215 then
+        elseif code==196488215 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
             local sg=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
             local sc=sg:GetFirst()
@@ -139,7 +139,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 sc:RegisterEffect(e2)
             end			
         --OVER BURST DRAGON 
-        elseif code==96488219 then
+        elseif code==196488219 then
             local sg=Duel.GetMatchingGroup(Card.IsNegatableMonster,tp,0,LOCATION_MZONE,nil)
 			local sc=sg:GetFirst()
             for sc in aux.Next(sg) do
@@ -159,7 +159,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
             local count=Duel.GetMatchingGroupCount(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
             Duel.Damage(1-tp,count*500,REASON_EFFECT)			
         --PHANTASM DRAGON 
-        elseif code==96488201 then
+        elseif code==196488201 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
             local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,nil)
             if #sg>0 then
