@@ -48,11 +48,19 @@ function s.hdcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,PLAYER_ALL,LOCATION_HAND)
 end
 function s.hdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,2)
-	Duel.SendtoDeck(g,nil,1,REASON_EFFECT)
+	local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
+	local g2=Duel.GetFieldGroup(tp,LOCATION_HAND,0):RandomSelect(tp,1)
+	if #g1>0 and #g2>0 then
+		local sg1=g1:RandomSelect(tp,1)
+		local sg2=g2:RandomSelect(tp,1)
+		sg1:Merge(sg2)
+		Duel.ConfirmCards(tp,sg1)
+		Duel.ConfirmCards(1-tp,sg1)
+		Duel.SendtoDeck(sg1,nil,1,REASON_EFFECT)
+	end
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
