@@ -64,7 +64,7 @@ function s.cannotdisfilter(e,ct)
 	local trig_e=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
 	if not trig_e:IsMonsterEffect() then return false end
 	local trig_c=trig_e:GetHandler()
-	return trig_c:IsControler(e:GetHandlerPlayer()) and trig_c:IsLocation(LOCATION_MZONE) and trig_c:IsRace(RACE_DRAGON) and trig_c:IsFaceup()
+	return trig_c:IsControler(e:GetHandlerPlayer()) and trig_c:IsLocation(LOCATION_MZONE) and trig_c:IsSpecialSummoned() and trig_c:IsFaceup()
 end
 function s.escon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabel()==1
