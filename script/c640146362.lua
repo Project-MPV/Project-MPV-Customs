@@ -89,10 +89,11 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local sg=Duel.SelectTarget(tp,s.spectral,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
         if #sg>0 then
-            local sc=sg:GetFirstTarget()
+            local sc=sg:GetFirst()
             if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
                 local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(3206)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
                 e1:SetType(EFFECT_TYPE_SINGLE)
                 e1:SetCode(EFFECT_CANNOT_ATTACK)
                 e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
