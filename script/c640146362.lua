@@ -80,21 +80,43 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 sc:RegisterEffect(e3)
                 Duel.Damage(1-tp,800,REASON_EFFECT)
             end            
-        --SPECTRAL GENERAL
-        elseif code==196488216 then
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-            local g=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
-            local sc=g:GetFirst()
-            if sc then
-                Duel.HintSelection(g)
-                local op=Duel.SelectOption(tp,aux.Stringid(code,3),aux.Stringid(code,2))
+		--SPECTRAL GENERAL
+		elseif code==196488216 then
+		--efek: [0] Special Summon or [1] Debuff ATK/DEF
+		local opt=Duel.SelectOption(tp, aux.Stringid(code,0), aux.Stringid(code,4))   
+		if opt==0 then
+        --efek: [1] Special Summon 1 "Enigmation" from GY
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+        local sg=Duel.SelectTarget(tp,s.spectral,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+        if #sg>0 then
+            local sc=sg:GetFirstTarget()
+            if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
                 local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(3206)
                 e1:SetType(EFFECT_TYPE_SINGLE)
-                e1:SetCode(op==0 and EFFECT_SET_ATTACK_FINAL or EFFECT_SET_DEFENSE_FINAL)
-                e1:SetValue((op==0 and sc:GetAttack() or sc:GetDefense())/2)
-                e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+                e1:SetCode(EFFECT_CANNOT_ATTACK)
+                e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
                 sc:RegisterEffect(e1)
             end
+            Duel.SpecialSummonComplete()
+        end     
+    else
+        --Efek 2: Debuff ATK or DEF Final
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+        local g=Duel.SelectMatchingCard(tp,s.sum,tp,0,LOCATION_MZONE,1,1,nil)
+        local sc=g:GetFirst()
+        if sc then
+            Duel.HintSelection(g)
+            --ATK or DEF
+            local op=Duel.SelectOption(tp,aux.Stringid(code,3),aux.Stringid(code,2))
+            local e1=Effect.CreateEffect(e:GetHandler())
+            e1:SetType(EFFECT_TYPE_SINGLE)
+            e1:SetCode(op==0 and EFFECT_SET_ATTACK_FINAL or EFFECT_SET_DEFENSE_FINAL)
+            e1:SetValue((op==0 and sc:GetAttack() or sc:GetDefense())/2)
+            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+            sc:RegisterEffect(e1)
+        end
+    end
         --OVERCHARGE DRAGON
         elseif code==196488218 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
@@ -173,6 +195,9 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
     end
 function s.sum(c)
     return c:IsFaceup() and (c:HasNonZeroAttack() or c:HasNonZeroDefense())
+end
+function s.spectral(c,e,tp)
+	return c:IsSetCard(0x344) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spfilter(c,e,tp)
 	return c:IsType(TYPE_EXTRA) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
