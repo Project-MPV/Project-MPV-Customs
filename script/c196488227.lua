@@ -75,7 +75,9 @@ function s.rpfilter(c,e,tp)
 	and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.tetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return not e:GetHandler():IsForbidden() and Duel.IsExistingMatchingCard(s.rpfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	and Duel.IsExistingMatchingCard(s.rpfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.teop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
