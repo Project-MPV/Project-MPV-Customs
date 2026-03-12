@@ -1,10 +1,10 @@
---Eternity Ace - Surveyor
+--Eternity Ace - Nazark
 local s,id=GetID()
 function s.initial_effect(c)
 	c:SetSPSummonOnce(id)
 	--pendulum summon
 	Pendulum.AddProcedure(c)
-	--atk
+	--Debuff atk
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_ATKCHANGE)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	e0:SetCondition(s.atkcon2)
 	e0:SetOperation(s.atkop2)
 	c:RegisterEffect(e0)
-	--atk
+	--If opponent has monster, debuff their ATK
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
@@ -76,6 +76,9 @@ function s.atkop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.cfilter(c)
 	return c:IsSetCard(0x993) and c:IsAbleToRemoveAsCost()
+end
+function s.atkcond(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsMonster,tp,0,LOCATION_MZONE,1,nil)
 end
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE+LOCATION_DECK,0,1,nil) end
