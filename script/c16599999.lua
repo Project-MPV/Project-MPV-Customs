@@ -35,7 +35,6 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetCountLimit(1,{id,1})
-	e3:SetCondition(s.atkcond)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
@@ -74,9 +73,6 @@ function s.atkop2(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		bc:RegisterEffect(e2)
 	end
-end
-function s.atkcond(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsMonster,tp,0,LOCATION_MZONE,1,nil)
 end
 function s.cfilter(c)
 	return c:IsSetCard(0x993) and c:IsAbleToRemoveAsCost()
