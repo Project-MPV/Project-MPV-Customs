@@ -13,10 +13,13 @@ function s.initial_effect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
     e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
     e1:SetRange(LOCATION_MZONE)
-    e1:SetCode(EFFECT_INDESTRUCTABLE)
+    e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
     e1:SetCondition(function(e) return e:GetHandler():GetOverlayCount()>0 end)
     e1:SetValue(1)
-    c:RegisterEffect(e1)
+    c:RegisterEffect(e1) 
+    local e2=e1:Clone()
+    e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+    c:RegisterEffect(e2)
 	--Temporary Rebirth (SS from Soul)
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(id,0))
@@ -28,6 +31,16 @@ function s.initial_effect(c)
     e2:SetTarget(s.sstg)
     e2:SetOperation(s.ssop)
     c:RegisterEffect(e2)
+	--Debuff Opponent: IF another monster is Rebirth Summoned
+    local e3=Effect.CreateEffect(c)
+    e3:SetDescription(aux.Stringid(id,1))
+    e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+    e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+    e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+    e3:SetRange(LOCATION_MZONE)
+    e3:SetCondition(s.atkcon)
+    e3:SetOperation(s.atkop)
+    c:RegisterEffect(e3)
 end
 --FIRE Rebirth Monster 
 function s.matfilter(tc)
@@ -80,5 +93,70 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetOwner()
     if c:IsLocation(LOCATION_MZONE) and tc:IsLocation(LOCATION_MZONE) then
         Duel.Overlay(c,tc)
+    end
+end
+
+function s.atkfilter(tc,e)
+    return tc:IsFaceup() 
+        and tc:IsSummonType(SUMMON_TYPE_REBIRTH) 
+        and tc~=e:GetHandler() 
+        and tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+end
+
+function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
+    local g=eg:Filter(s.atkfilter,nil,e)
+    if #g>0 then
+        --If more than one appears simultaneously, take the highest Grade (Just for balance).
+        g:KeepAlive()
+        e:SetLabelObject(g)
+        return true
+    end
+    return false
+end
+
+function s.atkop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    local g=e:GetLabelObject()
+    if not g then return end    
+    --Count the highest GRADE
+    local max_grade=0
+    local tc_ally=g:GetFirst()
+    while tc_ally do
+        local eff=tc_ally:IsHasEffect(EFFECT_REBIRTH_GRADE)
+        if eff and eff:GetValue()>max_grade then
+            max_grade=eff:GetValue()
+        end
+        tc_ally=g:GetNext()
+    end
+    g:DeleteGroup() 
+    if max_grade<=0 then return end
+    local val=max_grade*200
+    local opponent_g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+    local dg=Group.CreateGroup()  
+    for tc in aux.Next(opponent_g) do
+        local old_atk=tc:GetAttack()
+        local old_def=tc:GetDefense()        
+        --Debuff ATK/DEF
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_SINGLE)
+        e1:SetCode(EFFECT_UPDATE_ATTACK)
+        e1:SetValue(-val)
+        e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+        tc:RegisterEffect(e1) 
+        local e2=e1:Clone()
+        e2:SetCode(EFFECT_UPDATE_DEFENSE)
+        tc:RegisterEffect(e2)        
+        --If become 0 (whichever is lower)
+        local cur_atk=tc:GetAttack()
+        local cur_def=tc:GetDefense()
+        local lower_stat=math.min(cur_atk,cur_def)        
+        if lower_stat==0 then
+            dg:AddCard(tc)
+        end
+    end    
+    --Destroy them
+    if #dg>0 then
+        Duel.BreakEffect()
+        Duel.Destroy(dg,REASON_EFFECT)
     end
 end
