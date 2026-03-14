@@ -233,41 +233,63 @@ end
 --------------------------------------------------------------------------------
 --GENERIC
 --------------------------------------------------------------------------------
+function Rebirth.GetMaterialValue(tc)
+    local eff=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+    if eff then return eff:GetValue() end
+    return tc:GetOriginalLevel()
+end
+
 function Rebirth.AddGenericProcedure(c,min,max,filter)
+    local grade=c:GetOriginalLevel()    
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetCondition(Rebirth.GenericCondition(min,max,filter))
-    e1:SetTarget(Rebirth.GenericTarget(min,max,filter))
-    e1:SetOperation(Rebirth.StandardOperation)
+    e1:SetCondition(Rebirth.GenericCondition(min,max,filter,grade))
+    e1:SetTarget(Rebirth.GenericTarget(min,max,filter,grade))
+    e1:SetOperation(Rebirth.GenericOperation)
+    e1:SetValue(SUMMON_TYPE_REBIRTH)
     c:RegisterEffect(e1)
-    local grade=c:GetLevel()
+
     Rebirth.AddCommonEffects(c,grade)
 end
 
-function Rebirth.GenericCondition(min,max,filter)
+function Rebirth.GenericCondition(min,max,filter,grade)
     return function(e,c)
         if c==nil then return true end
         local tp=c:GetControler()
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter,true)
-        return #mg>=min
+        if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end       
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter,true)       
+        return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
+            return sg:GetSum(Rebirth.GetMaterialValue)==grade 
+        end,0)
     end
 end
-function Rebirth.GenericTarget(min,max,filter)
+function Rebirth.GenericTarget(min,max,filter,grade)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
         local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter,true)
-        local g=mg:Select(tp,min,max,nil)
-        if #g>=min then
-            g:KeepAlive()
-            e:SetLabelObject(g)
+        local cancelable=Duel.IsSummonCancelable()
+
+        local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
+            return sg:GetSum(Rebirth.GetMaterialValue)==grade end,1,tp,HINTMSG_REMOVED,nil,nil,cancelable)
+            
+        if sg and #sg>=min then
+            sg:KeepAlive()
+            e:SetLabelObject(sg)
             return true
         end
         return false
     end
 end
 
+function Rebirth.GenericOperation(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+    local g=e:GetLabelObject()
+    if not g then return end
+    Duel.Overlay(c,g,REASON_REBIRTH+REASON_MATERIAL)   
+    c:SetMaterial(g)
+    g:DeleteGroup()
+end
 
 --------------------------------------------------------------------------------
 --COMBINATION

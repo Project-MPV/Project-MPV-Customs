@@ -29,7 +29,6 @@ function s.initial_effect(c)
     e2:SetOperation(s.ssop)
     c:RegisterEffect(e2)
 end
-
 --FIRE Rebirth Monster 
 function s.matfilter(tc)
     return tc:IsAttribute(ATTRIBUTE_FIRE) and tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
@@ -40,21 +39,25 @@ end
 
 function s.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-        and c:GetOverlayCount()>0 end
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_OVERLAY)
+    if chk==0 then 
+        local g=c:GetOverlayGroup()
+        return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+            and g:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false) 
+    end
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 
 function s.ssop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsRelateToEffect(e) or c:GetOverlayCount()==0 then return end
-    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end   
+    local g=c:GetOverlayGroup()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-    local g=c:GetOverlayGroup():Select(tp,1,1,nil)
-    local tc=g:GetFirst()    
+    local sg=g:FilterSelect(tp,Card.IsCanBeSpecialSummoned,1,1,nil,e,0,tp,false,false)   
+    local tc=sg:GetFirst()    
     if tc and Duel.SpecialSummon(tc,SUMMON_TYPE_REBIRTH,tp,tp,false,false,POS_FACEUP)>0 then
-        tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)       
-        --Delayed event
+        tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)              
+        --Return to Soul (End Phase)
         local e1=Effect.CreateEffect(c)
         e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
         e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -67,7 +70,6 @@ function s.ssop(e,tp,eg,ep,ev,re,r,rp)
         Duel.RegisterEffect(e1,tp)
     end
 end
---Logic Return to Soul (End Phase)
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
     local tc=e:GetLabelObject()
     return tc:GetFlagEffect(id)~=0
