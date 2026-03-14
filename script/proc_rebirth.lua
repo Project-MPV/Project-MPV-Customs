@@ -23,7 +23,7 @@ EFFECT_REBIRTH_GRADE =0x30000000
 --FILTER UTILITY
 --------------------------------------------------------------------------------
 
-function Rebirth.TraceFilter(tc, filter, is_generic)
+function Rebirth.TraceFilter(tc,filter,is_generic)
     local loc=(tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED))
     if not loc then return false end
     local has_grade=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
@@ -44,7 +44,7 @@ function Rebirth.TraceFilter(tc, filter, is_generic)
     return true
 end
 
-function Rebirth.TraceFilterCombination(tc, materials)
+function Rebirth.TraceFilterCombination(tc,materials)
     return (tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED))
         and (tc:IsHasEffect(EFFECT_REBIRTH_GRADE) or tc:IsCode(table.unpack(materials)))
 end
@@ -52,49 +52,50 @@ end
 --------------------------------------------------------------------------------
 --STANDARD PROCEDURE
 --------------------------------------------------------------------------------
-function Rebirth.AddProcedure(c, grade, filter)
+function Rebirth.AddProcedure(c,grade,filter,min,max)
+    local min= min or 1
+    local max= max or 99
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetCondition(Rebirth.StandardCondition(grade, filter))
-    e1:SetTarget(Rebirth.StandardTarget(grade, filter))
+    e1:SetCondition(Rebirth.StandardCondition(grade,filter,min,max))
+    e1:SetTarget(Rebirth.StandardTarget(grade,filter,min,max))
     e1:SetOperation(Rebirth.StandardOperation)
     e1:SetValue(SUMMON_TYPE_REBIRTH)
     c:RegisterEffect(e1)
-    Rebirth.AddCommonEffects(c, grade)
+    Rebirth.AddCommonEffects(c,grade)
 end
 
-function Rebirth.StandardCondition(grade, filter)
+function Rebirth.StandardCondition(grade,filter,min,max)
     return function(e,c,og)
         if c==nil then return true end
         local tp=c:GetControler()
         local zone=Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)
         if zone<=0 then return false end
         local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter,false)        
-        return aux.SelectUnselectGroup(mg,e,tp,1,#mg,function(sg,e,tp,mg) 
+        return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
             return sg:GetSum(Card.GetLevel)==grade 
         end,0)
     end
 end
 
-function Rebirth.StandardTarget(grade, filter)
+function Rebirth.StandardTarget(grade,filter,min,max)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
-        if chk==0 then return Rebirth.StandardCondition(grade,filter)(e,c,nil) end
+        if chk==0 then return Rebirth.StandardCondition(grade,filter,min,max)(e,c,nil) end
         local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter)
         local cancelable=Duel.IsSummonCancelable()
         
-        local sg=aux.SelectUnselectGroup(mg,e,tp,1,99,function(sg,e,tp,mg) 
+        local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
             return sg:GetSum(Card.GetLevel)==grade end,1,tp,HINTMSG_REMOVED,nil,nil,cancelable)      
-        --Check if sg is present AND the total level is correct according to grade
-        if sg and #sg>0 and sg:GetSum(Card.GetLevel)==grade then
+        
+        if sg and #sg>0 then
             sg:KeepAlive()
             e:SetLabelObject(sg)
             return true
-        else
-            return false 
         end
+        return false 
     end
 end
 
@@ -115,7 +116,7 @@ end
 -- c: summoned card
 -- grade: total level for standard
 -- material_filter: Prime Specific(it can be ID or function)
-function Rebirth.AddEvolutionProcedure(c, grade, material_filter, filter)
+function Rebirth.AddEvolutionProcedure(c,grade,material_filter,filter)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -127,7 +128,7 @@ function Rebirth.AddEvolutionProcedure(c, grade, material_filter, filter)
     e1:SetValue(SUMMON_TYPE_REBIRTH)
     c:RegisterEffect(e1)
     
-    Rebirth.AddCommonEffects(c, grade)
+    Rebirth.AddCommonEffects(c,grade)
 end
 --Helper to detect whether material_filter is an ID (number) or a Function
 function Rebirth.GetEvoFilter(material_filter)
@@ -137,7 +138,7 @@ function Rebirth.GetEvoFilter(material_filter)
         return material_filter
     end
 end
-function Rebirth.EvolutionCondition(grade, material_filter, filter)
+function Rebirth.EvolutionCondition(grade,material_filter,filter)
     return function(e,c,og)
         if c==nil then return true end
         local tp=c:GetControler()
