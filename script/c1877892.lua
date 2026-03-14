@@ -45,7 +45,7 @@ function s.initial_effect(c)
 end
 --Burn
 function s.burncon(e,tp,eg,ep,ev,re,r,rp)
-    return e:GetHandler():IsSummonType(SUMMON_TYPE_REBIRTH)
+    return e:GetHandler():GetOverlayCount() and e:GetHandler():IsSummonType(SUMMON_TYPE_REBIRTH)
 end
 function s.burntg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
