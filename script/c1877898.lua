@@ -1,7 +1,9 @@
 --Phoenix Combination - Armored Knight
 --Grade 12
-local s,id=GetID()
 if not PROC_REBIRTH_LOADED then Duel.LoadScript("proc_rebirth.lua") end
+if not MPV_CONSTANTS_IMPORTED then Duel.LoadScript("MPV_constant.lua") end
+local s,id=GetID()
+s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()
     --COMBINATION PROCEDURE: 1 Grade 8 + 1+ Level 4 or lower (Total 12)
