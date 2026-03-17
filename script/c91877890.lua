@@ -119,11 +119,9 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 				else
 					val=tc:GetLevel()
 				end
-				total_val=total_val+val
+				e3:SetLabel(val) 
 				tc=g2:GetNext()
 			end
-			--Take Damage
-			Duel.Damage(tp,total_val*100,REASON_EFFECT)
 		end
 	end
 end
@@ -134,5 +132,9 @@ function s.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.Destroy(tc,REASON_EFFECT)
+	local val=e:GetLabel()
+	if tc and Duel.Destroy(tc,REASON_EFFECT)>0 then
+		--Take Damage
+		Duel.Damage(tp,val*100,REASON_EFFECT)
+	end
 end
