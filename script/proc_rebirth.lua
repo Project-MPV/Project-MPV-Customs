@@ -209,7 +209,7 @@ function Rebirth.EvolutionTarget(grade, material_filter, filter)
         
         if choice==1 then --PRIME
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-            sg=mg_evo:Select(tp,1,1,nil)
+            sg=mg_evo:Select(tp,1,1,cancelable)
             
             if sg and #sg ==1 then
                 sg:KeepAlive()
