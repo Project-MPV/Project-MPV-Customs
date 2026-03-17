@@ -77,12 +77,29 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
     if sc then
         local atk=math.max(sc:GetAttack(),sc:GetDefense())
         if Duel.SendtoDeck(sc,nil,SEQ_DECKTOP,REASON_EFFECT)>0 then
+			--Can only declare one attack for the rest of the turn
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_ATTACK_ANNOUNCE)
+			e0:SetCondition(function(e) return Duel.IsTurnPlayer(e:GetHandlerPlayer()) end)
+			e0:SetOperation(s.limitop)
+			e0:SetReset(RESET_PHASE|PHASE_END)
+			Duel.RegisterEffect(e0,tp)
             local e1=Effect.CreateEffect(c)
             e1:SetType(EFFECT_TYPE_SINGLE)
             e1:SetCode(EFFECT_UPDATE_ATTACK)
             e1:SetValue(atk)
             e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-            c:RegisterEffect(e1)
+            c:RegisterEffect(e1)           
         end
     end
+end
+function s.limitop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e1:SetTargetRange(1,0)
+	e1:SetReset(RESET_PHASE|PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
