@@ -22,24 +22,26 @@ EFFECT_REBIRTH_GRADE =0x30000000
 --------------------------------------------------------------------------------
 --FILTER UTILITY
 --------------------------------------------------------------------------------
-
-function Rebirth.TraceFilter(tc,filter,is_generic)
+function Rebirth.TraceFilter(tc,c,filter,is_generic)
     local loc=(tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED))
-    if not loc then return false end
-    local has_grade=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
-    
+    if not loc then return false end    
+    local has_grade=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)    
     if is_generic then
-        --Generic (Overlord/Dragon)
+		--Generic (Overlord/Dragon)
         if not has_grade then return false end
     else
         --If Standard Procedure (Phoenix Knight/Hatchling): 
         --You can ONLY take monsters that have original Level (>0) 
-        --AND not a Rebirth monster (prevents Level 0 exploits) 
+        --AND not a Rebirth monster (prevents Level 0 exploits)
         if tc:GetLevel()<=0 or has_grade then return false end
     end
-
-    if type(filter)=="function" then
-        return filter(tc)
+    --s.matfilter workaround
+    if filter then
+        if type(filter)=="function" then
+            return filter(tc,c)
+        elseif type(filter)=="number" then
+            return tc:IsCode(filter)
+        end
     end
     return true
 end
@@ -74,7 +76,7 @@ function Rebirth.StandardCondition(grade,filter,min,max)
         local tp=c:GetControler()
         local zone=Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)
         if zone<=0 then return false end
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter,false)        
+		local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter,false)		
         return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
             return sg:GetSum(Card.GetLevel)==grade 
         end,0)
@@ -84,13 +86,14 @@ end
 function Rebirth.StandardTarget(grade,filter,min,max)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
         if chk==0 then return Rebirth.StandardCondition(grade,filter,min,max)(e,c,nil) end
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter)
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter,false)
         local cancelable=Duel.IsSummonCancelable()
         
         local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
-            return sg:GetSum(Card.GetLevel)==grade end,1,tp,HINTMSG_REMOVED,nil,nil,cancelable)      
+            return sg:GetSum(Card.GetLevel)==grade end,1,tp,HINTMSG_REMOVED,
+            function(sg,e,tp,mg) return sg:GetSum(Card.GetLevel)==grade end,nil,cancelable)      
         
-        if sg and #sg>0 then
+        if sg and #sg>0 and sg:GetSum(Card.GetLevel)==grade then
             sg:KeepAlive()
             e:SetLabelObject(sg)
             return true
@@ -272,9 +275,10 @@ function Rebirth.GenericTarget(min,max,filter,grade)
         local cancelable=Duel.IsSummonCancelable()
 
         local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
-            return sg:GetSum(Rebirth.GetMaterialValue)==grade end,1,tp,HINTMSG_REMOVED,nil,nil,cancelable)
+            return sg:GetSum(Rebirth.GetMaterialValue)==grade end,1,tp,HINTMSG_REMOVED,
+            function(sg,e,tp,mg) return sg:GetSum(Rebirth.GetMaterialValue)==grade end,nil,cancelable)
             
-        if sg and #sg>=min then
+        if sg and #sg>=min and sg:GetSum(Rebirth.GetMaterialValue)==grade then
             sg:KeepAlive()
             e:SetLabelObject(sg)
             return true
@@ -294,56 +298,62 @@ end
 --------------------------------------------------------------------------------
 --COMBINATION
 --------------------------------------------------------------------------------
-function Rebirth.AddCombinationProcedure(c, ...)
-    local materials = {...}
-    local e1=Effect.CreateEffect(c)
+function Rebirth.AddCombinationProcedure(c,min,max,filter,prime_con)
+    local grade=c:GetOriginalLevel()
+	local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetCondition(Rebirth.CombinationCondition(materials))
-    e1:SetTarget(Rebirth.CombinationTarget(materials))
+    e1:SetCondition(Rebirth.CombinationCondition(min,max,filter,prime_con,grade))
+    e1:SetTarget(Rebirth.CombinationTarget(min,max,filter,prime_con,grade))
     e1:SetOperation(Rebirth.StandardOperation)
     e1:SetValue(SUMMON_TYPE_REBIRTH)
     c:RegisterEffect(e1)
-    Rebirth.AddCommonEffects(c)
+    Rebirth.AddCommonEffects(c,grade)
 end
 
-function Rebirth.CombinationCondition(materials)
+function Rebirth.TraceFilterMix(tc,filter)
+    if not (tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED)) then return false end   
+    --If the card has a specific filter (eg: s.matfilter Phoenix Knight) 
+    if filter then
+        return filter(tc)
+    end
+    return tc:GetLevel()>0 or tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+end
+
+function Rebirth.CombinationCondition(min,max,filter,prime_con,grade)
     return function(e,c,og)
         if c==nil then return true end
         local tp=c:GetControler()
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilterCombination,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,materials)      
-        for _,code in ipairs(materials) do
-            if not mg:IsExists(Card.IsCode,1,nil,code) then return false end
+        if prime_con and not prime_con(e,tp,nil,0,0,nil,0,0) then return false end
+        if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilterMix,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter)
+        return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
+            return sg:GetSum(Rebirth.GetMaterialValue)==grade 
+        end,0)
+    end
+end
+function Rebirth.CombinationTarget(min,max,filter,prime_con,grade)
+    return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
+        if chk==0 then return Rebirth.CombinationCondition(min,max,filter,prime_con,grade)(e,c,nil) end        
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilterMix,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,filter)
+        local cancelable=Duel.IsSummonCancelable()
+        
+        local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
+            return sg:GetSum(Rebirth.GetMaterialValue)==grade 
+        end,1,tp,HINTMSG_REMOVED,
+        function(sg,e,tp,mg) return sg:GetSum(Rebirth.GetMaterialValue)==grade end,nil,cancelable)        
+        
+        if sg and #sg>=min and sg:GetSum(Rebirth.GetMaterialValue)==grade then
+            sg:KeepAlive()
+            e:SetLabelObject(sg)
+            return true
         end
-        return true
+        return false
     end
 end
 
-function Rebirth.CombinationTarget(materials)
-    return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
-        if chk==0 then return Rebirth.CombinationCondition(materials)(e,c,nil) end
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilterCombination,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,materials)
-        local cancelable=Duel.IsSummonCancelable()
-        local sg=Group.CreateGroup()
-        
-        for _,code in ipairs(materials) do
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVED)
-            local g=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,cancelable,nil,code)
-            if g and #g>0 then 
-                sg:Merge(g) 
-            else 
-                return false
-            end
-        end
-        
-        sg:KeepAlive()
-        e:SetLabelObject(sg)
-        e:SetLabel(0)
-        return true
-    end
-end
 
 --------------------------------------------------------------------------------
 --COMMON EFFECTS

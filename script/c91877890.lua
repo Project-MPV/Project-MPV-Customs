@@ -1,4 +1,5 @@
 --Alistair, Trickster of the Waxing Moon
+--Scripted by fawwazzed
 if not PROC_REBIRTH_LOADED then Duel.LoadScript("proc_rebirth.lua") end
 if not MPV_CONSTANTS_IMPORTED then Duel.LoadScript("MPV_constant.lua") end
 local s,id=GetID()
