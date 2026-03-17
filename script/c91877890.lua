@@ -76,6 +76,7 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,heads,heads,c)
 		if #g>0 then
+			Duel.HintSelection(g)
 			Duel.Destroy(g,REASON_EFFECT)
 		end
 	end	
@@ -83,19 +84,55 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 	if tails>0 then
 		local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,c)
 		if #g2>0 then
+			local total_val=0
 			local tc=g2:GetFirst()
 			while tc do
+				--Buff ATK/DEF
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				e1:SetValue(tails*700)
 				tc:RegisterEffect(e1)
 				local e2=e1:Clone()
 				e2:SetCode(EFFECT_UPDATE_DEFENSE)
-				tc:RegisterEffect(e2)
+				tc:RegisterEffect(e2)				
+				--Destroy during End Phase
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e3:SetCode(EVENT_PHASE+PHASE_END)
+				e3:SetCountLimit(1)
+				e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+				e3:SetLabelObject(tc)
+				e3:SetCondition(s.descon)
+				e3:SetOperation(s.desop)
+				e3:SetReset(RESET_PHASE+PHASE_END)
+				Duel.RegisterEffect(e3,tp)				
+				--Calculate Damage Value (Level/Rank/Link/Grade)
+				local val=0
+				if tc:IsHasEffect(EFFECT_REBIRTH_GRADE) then
+					val=tc:IsHasEffect(EFFECT_REBIRTH_GRADE):GetValue()
+				elseif tc:IsType(TYPE_XYZ) then
+					val=tc:GetRank()
+				elseif tc:IsType(TYPE_LINK) then
+					val=tc:GetLink()
+				else
+					val=tc:GetLevel()
+				end
+				total_val=total_val+val
 				tc=g2:GetNext()
 			end
+			--Take Damage
+			Duel.Damage(tp,total_val*100,REASON_EFFECT)
 		end
 	end
+end
+
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return tc and tc:IsLocation(LOCATION_MZONE)
+end
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.Destroy(tc,REASON_EFFECT)
 end
