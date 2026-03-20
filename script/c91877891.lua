@@ -15,13 +15,20 @@ function s.initial_effect(c)
     e1:SetType(EFFECT_TYPE_IGNITION)
     e1:SetRange(LOCATION_MZONE)
     e1:SetCountLimit(1)
+	e1:SetCondition(s.co)
     e1:SetTarget(s.cointg)
     e1:SetOperation(s.coinop)
     c:RegisterEffect(e1)
 end
 s.toss_coin=true
+function s.atk(c)
+	return (c:IsFaceup() and c:HasNonZeroAttack()) or c:IsSpellTrap()
+end
+function s.co(c,tp)
+	return Duel.IsExistingMatchingCard(s.atk,tp,0,LOCATION_ONFIELD,1,nil)
+end
 function s.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return true end
+    if chk==0 then return Duel.IsExistingMatchingCard(s.atk,tp,0,LOCATION_ONFIELD,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 end
 
