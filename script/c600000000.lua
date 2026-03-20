@@ -31,10 +31,20 @@ s.listed_series={0x8}
 function s.matfilter(c)
     return c:IsSetCard(0x8) --if you also want to filter level just add this e.g: and c:GetLevel()==4
 end
-
+--This just so it can't check Material other than "Soul Material"
 function s.atkval(e,c)
-    local g=c:GetOverlayGroup()
-    return g:FilterCount(Card.IsSetCard,nil,0x8)*200
+    local tp=e:GetHandlerPlayer()
+    local g=Duel.GetMatchingGroup(function(target) return target:IsFaceup() and target:IsHasEffect(EFFECT_REBIRTH_GRADE) end,tp,LOCATION_MZONE,0,nil)   
+    local total_hero_soul=0
+    local tc=g:GetFirst()   
+    while tc do
+        local mg=tc:GetOverlayGroup()
+        if #mg>0 then
+            total_hero_soul=total_hero_soul+mg:FilterCount(Card.IsSetCard,nil,0x8)
+        end
+        tc=g:GetNext()
+    end   
+    return total_hero_soul*200
 end
 
 function s.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
