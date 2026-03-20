@@ -55,8 +55,7 @@ end
 
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
     local tc=e:GetHandler():GetBattleTarget()
-    local rec=e:GetLabel() -- Mengambil nilai ATK dari s.cost
-    
+    local rec=e:GetLabel() --Retrieving ATK value from s.cost, pardon the g.translate   
     if tc:IsLocation(LOCATION_GRAVE) then
         local dam=tc:GetAttack()
         if Duel.Damage(1-tp,dam,REASON_EFFECT)>0 then
