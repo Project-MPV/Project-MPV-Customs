@@ -6,7 +6,7 @@ s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()   
     --REBIRTH SUMMON: 2 Level 4 Monsters= Grade 8
-    Rebirth.AddProcedure(c,8,nil,2,2) 
+    Rebirth.AddProcedure(c,8,4,2,2) 
     --To Extra Deck & Destroy S/T
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))

@@ -25,23 +25,23 @@ EFFECT_REBIRTH_GRADE =0x30000000
 function Rebirth.TraceFilter(tc,c,filter,is_generic)
     local loc=(tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED))
     if not loc then return false end    
+    if filter then
+        if type(filter)=="function" then
+            if not filter(tc,c) then return false end
+        elseif type(filter)=="number" then
+            if tc:GetLevel()~=filter then return false end
+        end
+    end
+
     local has_grade=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)    
     if is_generic then
 		--Generic (Overlord/Dragon)
         if not has_grade then return false end
     else
-        --If Standard Procedure (Phoenix Knight/Hatchling): 
+		--If Standard Procedure (Phoenix Knight/Hatchling): 
         --You can ONLY take monsters that have original Level (>0) 
         --AND not a Rebirth monster (prevents Level 0 exploits)
         if tc:GetLevel()<=0 or has_grade then return false end
-    end
-    --s.matfilter workaround
-    if filter then
-        if type(filter)=="function" then
-            return filter(tc,c)
-        elseif type(filter)=="number" then
-            return tc:IsCode(filter)
-        end
     end
     return true
 end
