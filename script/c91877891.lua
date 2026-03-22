@@ -22,14 +22,15 @@ function s.initial_effect(c)
 end
 s.toss_coin=true
 function s.atk(c)
-	return (c:IsFaceup() and c:HasNonZeroAttack()) or c:IsSpellTrap()
+    return (c:IsFaceup() and c:IsMonster() and c:GetAttack()>0) or c:IsSpellTrap()
 end
-function s.co(c,tp)
+function s.co(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.atk,tp,0,LOCATION_ONFIELD,1,nil)
 end
 function s.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(s.atk,tp,0,LOCATION_ONFIELD,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
+    Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
 end
 
 function s.coinfate(c)
@@ -42,7 +43,8 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
     -- Throw until TAILS
     while Duel.TossCoin(tp,1)==COIN_HEADS do
         heads=heads+1
-        local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+        local g=Duel.GetMatchingGroup(s.atk,tp,0,LOCATION_ONFIELD,nil)
+		if #g==0 then break end
         if #g>0 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
             local sg=g:Select(tp,1,1,nil)
@@ -68,7 +70,9 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
                     end
                 end
             end
-        end
+        else
+		break
+		end
         Duel.BreakEffect()
     end 
     --If TAILS (only 1st try)
