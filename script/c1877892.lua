@@ -87,7 +87,7 @@ function s.reviveop(e,tp,eg,ep,ev,re,r,rp)
     if c:IsRelateToEffect(e) then
         if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler())
+			local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 				if #g>0 then
 				Duel.HintSelection(g)
 				Duel.Destroy(g,REASON_EFFECT)
