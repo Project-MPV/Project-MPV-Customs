@@ -7,7 +7,7 @@ s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()
     --COMBINATION PROCEDURE: 1 Grade 8 + 1+ Level 4 or lower (Total 12)
-    Rebirth.AddCombinationProcedure(c,2,99,s.matfilter,s.prime_con)    
+    Rebirth.AddCombinationProcedure(c,2,99,s.matfilter,s.prime_con,12)    
     --Inflict damage on Rebirth Summon
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
@@ -32,9 +32,9 @@ function s.initial_effect(c)
 end
 function s.matfilter(tc,c)
     if tc:IsHasEffect(EFFECT_REBIRTH_GRADE) then
-        return tc:IsHasEffect(EFFECT_REBIRTH_GRADE):GetValue()==8
+        return tc:GetOriginalLevel()==8
     else
-        return tc:GetLevel()<=4
+        return tc:GetLevel()>0 and tc:GetLevel()<=4
     end
 end
 --Must have "Phoenix Knight" in GY

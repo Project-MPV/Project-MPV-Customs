@@ -7,7 +7,7 @@ s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()   
     --GENERIC PROCEDURE
-    Rebirth.AddGenericProcedure(c,3,3,s.matfilter)  
+    Rebirth.AddGenericProcedure(c,3,3,s.matfilter,13)  
     --Cannot be destroyed as long as there is material
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
@@ -44,7 +44,7 @@ function s.initial_effect(c)
 end
 --FIRE Rebirth Monster 
 function s.matfilter(tc)
-    return tc:IsAttribute(ATTRIBUTE_FIRE) and tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+    return tc:IsAttribute(ATTRIBUTE_FIRE) and (tc:IsHasEffect(EFFECT_REBIRTH_GRADE) and tc:GetOriginalLevel()>0)
 end
 function s.sscon(e,tp,eg,ep,ev,re,r,rp)
     return e:GetHandler():IsSummonType(SUMMON_TYPE_REBIRTH)

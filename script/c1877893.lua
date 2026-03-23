@@ -7,7 +7,7 @@ s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()  
     --GENERIC REBIRTH PROCEDURE
-    Rebirth.AddGenericProcedure(c,2,99,s.matfilter)
+    Rebirth.AddGenericProcedure(c,2,99,s.matfilter,10)
     --ATK (Material)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
