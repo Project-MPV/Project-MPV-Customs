@@ -49,7 +49,7 @@ end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end  
-    local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)   
+    local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,e:GetHandler())   
     if chk==0 then 
         return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
             and g:GetClassCount(Card.GetCode)>=2
