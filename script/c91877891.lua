@@ -52,7 +52,7 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
                 Duel.HintSelection(sg)
                 local tc=sg:GetFirst()                               
                 --If face-up Monster:Debuff. If not (Facedown/ST), destroy.
-                if tc:IsFaceup() and tc:IsType(TYPE_MONSTER) then
+                if tc:IsFaceup() and tc:IsType(TYPE_MONSTER) and not tc:IsAttack(0) then
                     local e1=Effect.CreateEffect(c)
                     e1:SetType(EFFECT_TYPE_SINGLE)
                     e1:SetCode(EFFECT_UPDATE_ATTACK)
