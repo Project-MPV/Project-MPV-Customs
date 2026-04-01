@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	----
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RECOVER)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
@@ -58,6 +58,9 @@ end
 function s.dark(c)
 	return c:IsAbleToHand() and c:IsCode(117106529)
 end
+function s.respellfilter(c)
+	return c:IsSpell() and c:IsFaceup()
+end
 function s.tb(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.dark,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
@@ -68,7 +71,7 @@ function s.tbo(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		local rg=Duel.GetMatchingGroup(Card.IsSpell,tp,LOCATION_REMOVED,0,nil)
+		local rg=Duel.GetMatchingGroup(s.respellfilter,tp,LOCATION_REMOVED,0,nil)
 		ct=Duel.SendtoGrave(rg,REASON_EFFECT)
 		if ct>0 then
 		Duel.Recover(tp,ct*500,REASON_EFFECT)
