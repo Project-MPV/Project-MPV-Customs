@@ -1,4 +1,4 @@
---Rank-Up-Magic Decisive Chaos
+--Rank-Up-Magic Enigmation of Chaos
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -14,7 +14,7 @@ end
 s.listed_series={0x344}
 function s.filter1(c,e,tp)
 	local pg=aux.GetMustBeMaterialGroup(tp,Group.FromCards(c),tp,nil,nil,REASON_XYZ)
-	return #pg<=1 and c:IsType(TYPE_XYZ) and c:IsCanBeXyzMaterial()
+	return #pg<=1 and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and (c:GetRank()>0 or c:IsStatus(STATUS_NO_LEVEL)) 
 		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,c:GetRank()+1,pg)
 end
@@ -29,6 +29,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsPlayerCanSpecialSummonCount(tp,1)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingTarget(s.filter1,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,s.filter1,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_EXTRA)
 end
@@ -56,6 +57,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(s.atkval)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		sc:RegisterEffect(e1,true)
+		local eb=Effect.CreateEffect(c)
+		eb:SetType(EFFECT_TYPE_FIELD)
+		eb:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		eb:SetCode(EFFECT_CANNOT_REMOVE)
+		eb:SetRange(LOCATION_MZONE)
+		eb:SetTargetRange(1,1)
+		eb:SetTarget(s.rmlimit)
+		sc:RegisterEffect(eb,true)
 		if not sc:IsType(TYPE_EFFECT) then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
@@ -65,12 +74,15 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(e2,true)
 		end
 		sc:CompleteProcedure()
-		sc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,0))
+		sc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,3306)
 	end
 end
 function s.atkfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x344)
 end
 function s.atkval(e,c)
-	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)*100
+	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)*200
+end
+function s.rmlimit(e,c,tp,r)
+	return c==e:GetHandler() and r==REASON_EFFECT
 end

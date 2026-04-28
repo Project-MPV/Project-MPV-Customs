@@ -35,6 +35,9 @@ end
 function s.ffilter(c,fc,sumtype,tp)
 	return c:IsSetCard(0x303) or c:IsSetCard(0x344)
 end
+function s.rmfilter(c,tp)
+	return c:IsSpellTrap() and c:IsAbleToRemove()
+end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.HasFlagEffect(tp,id) then return end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE|PHASE_END,0,1)
@@ -55,6 +58,14 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE|PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	aux.RegisterClientHint(c,0,tp,1,0,aux.Stringid(id,1))
+	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	end
 end
 function s.actlimval(e,re,rp)
 	local rc=re:GetHandler()
