@@ -65,11 +65,13 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if #tg>0 and Duel.SendtoDeck(tg,nil,1,REASON_EFFECT)>0 then
-		local g=Duel.GetOperatedGroup()
-		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then
-			if c:IsRelateToEffect(e) then
-				Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if #tg==2 then
+		if Duel.SendtoDeck(tg,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 then
+			local g=Duel.GetOperatedGroup()
+			if g:IsExists(Card.IsLocation,2,nil,LOCATION_DECK+LOCATION_EXTRA) then
+				if c:IsRelateToEffect(e) then
+					Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+				end
 			end
 		end
 	end
