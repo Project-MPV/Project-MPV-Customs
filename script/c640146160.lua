@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x344}
-function s.filter1(c,e,tp)
+function s.filter1(c,tp)
 	return c:IsMonster() and c:IsSetCard(0x344) and c:HasLevel() and c:IsAbleToHand()
 		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_DECK,0,1,c,c:GetLevel())
 end
@@ -31,51 +31,72 @@ function s.filter2(c,lv)
 	return c:IsMonster() and c:IsSetCard(0x344) and c:HasLevel() and c:IsAbleToHand() and not c:IsLevel(lv) 
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK,0,1,nil,e,tp)
-	and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
+
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	local g2=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,1,1,nil,g1:GetFirst():GetLevel())
-	if #g1>0 and #g2>0 then
+	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_DECK,0,nil,tp)
+	if #g==0 then return end
+	local g1=nil
+	local g2=nil
+	local cancelable=true	
+	--LOOP SELECTION
+	while true do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		g1=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_DECK,0,1,1,nil,tp)
+		if #g1==0 then break end 		
+		local tc1=g1:GetFirst()		
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		g2=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,0,1,tc1,tc1:GetLevel())		
+		if #g2>0 then
+			break
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
+		end
+	end
+	if g1 and g2 and #g1>0 and #g2>0 then
+		g1:Merge(g2)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
-		Duel.SendtoHand(g2,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g1+g2)
+		Duel.ConfirmCards(1-tp,g1)
 	end
 end
 function s.stfilter(c)
 	return c:IsCode(8855578) or (c:IsSetCard(0x95) and c:IsSpell()) and c:IsSSetable()
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.stfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil) end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeck() 
+		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.stfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,c) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local nevermind=e:GetHandler()
-	if Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)~=0 then
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.stfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
-	local smash=g:GetFirst()
-	if smash then
-		Duel.SSet(tp,smash)
-		local do_di_do=Effect.CreateEffect(nevermind)
-		do_di_do:SetType(EFFECT_TYPE_SINGLE)
-		do_di_do:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		do_di_do:SetCode(EFFECT_BECOME_QUICK)
-		do_di_do:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		smash:RegisterEffect(do_di_do)
-		local what_did_you_expect=Effect.CreateEffect(nevermind)
-		what_did_you_expect:SetType(EFFECT_TYPE_SINGLE)
-		what_did_you_expect:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		what_did_you_expect:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		what_did_you_expect:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		smash:RegisterEffect(what_did_you_expect)
-end
-end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.stfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
+		local smash=g:GetFirst()
+		if smash and Duel.SSet(tp,smash)>0 then
+			--Set as Quick Play
+			local e1=Effect.CreateEffect(smash)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_BECOME_QUICK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			smash:RegisterEffect(e1)		
+			local e2=Effect.CreateEffect(smash)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			smash:RegisterEffect(e2)
+		end
+	end
 end
