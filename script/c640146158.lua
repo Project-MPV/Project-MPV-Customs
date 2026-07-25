@@ -22,6 +22,7 @@ function s.initial_effect(c)
 	e2:SetCountLimit(1,{id,1})
 	e2:SetCondition(s.negcond)
 	e2:SetCost(s.negcost)
+	e2:SetTarget(s.negtg)
 	e2:SetOperation(s.negop)
 	c:RegisterEffect(e2)
 end
@@ -72,17 +73,35 @@ function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
+function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,tp,LOCATION_SZONE)
+end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--Negate face-up spell/trap
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_SZONE,LOCATION_SZONE,e:GetHandler())
-	for rc in aux.Next(g) do
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
-	rc:RegisterEffect(e1)
-end
+	e1:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)
+	e1:SetTarget(s.distg)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_BATTLE)
+	Duel.RegisterEffect(e1,tp)
+	--Negate activated effects
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetOperation(s.disop)
+	e2:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_BATTLE)
+	Duel.RegisterEffect(e2,tp)
+	--Negate Trap monsters
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetTarget(s.distg)
+	e3:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_BATTLE)
+	Duel.RegisterEffect(e3,tp)
 	if Duel.IsExistingMatchingCard(s.attachfilter,tp,LOCATION_GRAVE,0,1,nil,tp) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACH)
 	local mc=Duel.SelectMatchingCard(tp,s.attachfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
@@ -93,4 +112,13 @@ end
 	Duel.Overlay(xyzc,mc)
 end
 end
+end
+function s.distg(e,c)
+	return c~=e:GetHandler() and c:IsSpellTrap()
+end
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tl=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if tl==LOCATION_SZONE and re:IsTrapEffect() or re:IsSpellEffect() then
+		Duel.NegateEffect(ev)
+	end
 end
