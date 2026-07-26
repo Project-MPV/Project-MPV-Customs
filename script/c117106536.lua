@@ -40,7 +40,7 @@ Auxiliary.addLizardCheck(c)
 	e3:SetOperation(s.operation)
 	c:RegisterEffect(e3)
 end
-s.listed_names={17106529}
+s.listed_names={117106529}
 function s.ffilter(c,fc,sumtype,tp)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_DRAGON)
 end
@@ -62,6 +62,9 @@ function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
@@ -82,10 +85,11 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
 		local g=Group.CreateGroup()
+		local c=e:GetHandler()
 		for i=1,ev do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
-			if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) then
+			if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) and not c then
 				local loc=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_LOCATION)
 				g:AddCard(tc)
 			end
@@ -96,7 +100,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		for i=1,ev do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
-			if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) then
+			if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) and not c then
 				local loc=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_LOCATION)
 				g:AddCard(tc)
 			end
@@ -107,14 +111,14 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	for i=1,ev do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		local tc=te:GetHandler()
-		if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) then
+		if tc and tc:IsCanBeEffectTarget(e) and te:IsActiveType(TYPE_MONSTER) and not c then
 			local loc=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_LOCATION)
 			g:AddCard(tc)
 			tc:RegisterFlagEffect(511002034,RESET_CHAIN,0,1,i)
 		end
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local sg=g:Select(tp,1,1,nil)
+	local sg=g:Select(tp,1,1,c)
 	Duel.SetTargetCard(sg)
 	local i=sg:GetFirst():GetFlagEffectLabel(511002034)
 	local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
