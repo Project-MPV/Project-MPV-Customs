@@ -83,7 +83,8 @@ function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()>0
+	local c=e:GetHandler()
+	return Duel.GetCurrentChain()>0 and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -1,3 +1,4 @@
+--Exfrost Icicle Cave
 local s,id=GetID()
 function s.initial_effect(c)
 	--
@@ -70,7 +71,7 @@ function s.wfilter(c)
 	return c:IsLocation(LOCATION_GRAVE) and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function s.thcond(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+	return Duel.IsTurnPlayer(e:GetHandlerPlayer())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
