@@ -116,18 +116,17 @@ end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel_ev=e:GetLabel()
-	if sel_ev<=0 then return end	
+	if sel_ev<=0 then return end
 	local te=Duel.GetChainInfo(sel_ev,CHAININFO_TRIGGERING_EFFECT)
-	if not te then return end		
+	if not te then return end
 	--NEGATE ACTIVATION ON CHAIN
-	if Duel.NegateActivation(sel_ev) then	
+	if Duel.NegateActivation(sel_ev) then
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
-			Duel.BreakEffect()				
-			local stolen_e=te:Clone()
+			Duel.BreakEffect()
 			local copied_tg=te:GetTarget()
 			local copied_op=te:GetOperation()
 			--Use the copy effect count limit
-			local count,code=te:GetCountLimit()			
+			local count,code=te:GetCountLimit()
 			--STOLEN EFFECT REGISTER TO DARK TEMPLAR
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(id,2))
@@ -135,37 +134,39 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EVENT_FREE_CHAIN)
 			e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E)
 			e1:SetRange(LOCATION_MZONE)
+			e1:SetCategory(te:GetCategory())
+			e1:SetProperty(te:GetProperty())
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			--copy count limit
 			if count>0 then
-				--copy count limit
 				if code>0 then
 					e1:SetCountLimit(count,{id,1})
 				else
 					e1:SetCountLimit(count)
 				end
-			end			
+			end
+			e1:SetLabel(te:GetLabel())
+			if te:GetLabelObject() then
+				e1:SetLabelObject(te:GetLabelObject())
+			end
 			e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-				if chkc then
-					if copied_tg then
-						return copied_tg(stolen_e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					end
-					return false
+				Duel.ClearTargetCard()
+				if copied_tg then
+					return copied_tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				end
 				if chk==0 then
-					if copied_tg then
-						return copied_tg(stolen_e,tp,eg,ep,ev,re,r,rp,0)
-					end
 					return true
 				end
-				if copied_tg then
-					copied_tg(stolen_e,tp,eg,ep,ev,re,r,rp,1)
-				end
-			end)		
+			end)
 			e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-				if copied_op then
-					copied_op(stolen_e,tp,eg,ep,ev,re,r,rp)
+				e:SetLabel(te:GetLabel())
+				if te:GetLabelObject() then
+					e:SetLabelObject(te:GetLabelObject())
 				end
-			end)					
+				if copied_op then
+					copied_op(e,tp,eg,ep,ev,re,r,rp)
+				end
+			end)
 			c:RegisterEffect(e1)
 			Duel.Hint(HINT_CARD,0,te:GetHandler():GetOriginalCode())
 		end
