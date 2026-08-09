@@ -30,8 +30,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--If WATER Monster loses ATK
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,0))
-	e3:SetCategory(CATEGORY_ATKCHANGE)
+	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetRange(LOCATION_SZONE)
@@ -52,14 +52,15 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	if not bc then return false end
 	if tc:IsControler(1-tp) then tc,bc=bc,tc end
 	if tc:IsFaceup() and (tc:IsSetCard(0xfc13) and tc:IsType(TYPE_SYNCHRO)) or 
-	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsRace(RACE_WYRM) and tc:IsType(TYPE_SYNCHRO)) then
+	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsRace(RACE_WYRM) 
+	and tc:IsType(TYPE_SYNCHRO)) and not bc:IsDisabled() and bc:CanAttack() and not bc:IsStatus(STATUS_BATTLE_DESTROYED) then
 		e:SetLabelObject(bc)
 		return true
 	else return false end
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local bc=e:GetLabelObject()
+	local bc=e:GetLabelObject()	
+	if chk==0 then return bc and not bc:IsDisabled() and bc:CanAttack()end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,bc,1,0,0)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
