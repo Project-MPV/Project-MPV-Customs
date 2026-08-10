@@ -51,22 +51,30 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	local bc=Duel.GetAttackTarget()
 	if not bc then return false end
 	if tc:IsControler(1-tp) then tc,bc=bc,tc end
-	if tc:IsFaceup() and (tc:IsSetCard(0xfc13) and tc:IsType(TYPE_SYNCHRO)) or 
-	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsRace(RACE_WYRM) 
-	and tc:IsType(TYPE_SYNCHRO)) and not bc:IsDisabled() and bc:CanAttack() and not bc:IsStatus(STATUS_BATTLE_DESTROYED) then
+	local is_valid_attacker=tc:IsFaceup() and 
+	((tc:IsSetCard(0xfc13) and tc:IsType(TYPE_SYNCHRO)) or 
+	(tc:GetOriginalLevel()>=8 and tc:IsAttribute(ATTRIBUTE_WATER) and tc:IsRace(RACE_WYRM) and tc:IsType(TYPE_SYNCHRO)))
+	local is_valid_target=bc:IsRelateToBattle() 
+		and bc:IsLocation(LOCATION_MZONE) 
+		and not bc:IsStatus(STATUS_BATTLE_DESTROYED) 
+		and not bc:IsDisabled() and bc:CanAttack()
+	if is_valid_attacker and is_valid_target then
 		e:SetLabelObject(bc)
 		return true
-	else return false end
+	else 
+		return false 
+	end
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local bc=e:GetLabelObject()	
-	if chk==0 then return bc and not bc:IsDisabled() and bc:CanAttack()end
+	if chk==0 then return bc and bc:IsRelateToBattle() and bc:IsLocation(LOCATION_MZONE) 
+	and not bc:IsStatus(STATUS_BATTLE_DESTROYED) and not bc:IsDisabled() and bc:CanAttack() end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,bc,1,0,0)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local bc=e:GetLabelObject()
-	if bc and bc:IsRelateToBattle() then
+	if bc and bc:IsRelateToBattle() and not bc:IsStatus(STATUS_BATTLE_DESTROYED) then
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DISABLE)
