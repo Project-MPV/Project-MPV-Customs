@@ -34,10 +34,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
-	local atk=tc:GetAttack()
-	local def=tc:GetDefense()
-	local val=math.min(atk,def)
-	Duel.Damage(1-tp,(val)/2,REASON_EFFECT)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
@@ -53,7 +49,12 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.afilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-end	
-end
+		if Duel.ConfirmCards(1-tp,g)~=0 then
+			local atk=tc:GetBaseAttack()
+			local def=tc:GetBaseDefense()
+			local val=math.min(atk,def)
+				Duel.Damage(1-tp,val/2,REASON_EFFECT)
+			end
+		end	
+	end
 end
