@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	Fusion.AddProcMix(c,true,true,aux.FilterBoolFunctionEx(Card.IsSetCard,0x391),aux.FilterBoolFunctionEx(Card.IsLocation,LOCATION_ONFIELD))
+	Fusion.AddProcMixN(c,true,true,aux.FilterBoolFunctionEx(Card.IsSetCard,0x391),1,s.wfilter,1)
 	--Buff
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -34,6 +34,9 @@ s.listed_series={0x391}
 function s.bcon()
 	return Duel.IsMainPhase()
 end
+function s.wfilter(c,fc,sumtype,tp)
+	return c:IsAttribute(ATTRIBUTE_WIND,fc,sumtype,tp) and c:IsOnField()
+end
 function s.dfilter(c)
 	return c:IsAbleToHand() and c:IsSetCard(0x391)
 end
@@ -57,7 +60,7 @@ function s.bop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		sc:RegisterEffect(e2)
-		if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if Duel.IsExistingMatchingCard(s.dfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			local sg=Duel.SelectMatchingCard(tp,s.dfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 			if #sg>0 then
 			Duel.BreakEffect()
