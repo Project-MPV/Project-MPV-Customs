@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--Xyz summon
-	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsSetCard,0x344),10,2,nil,nil,Xyz.InfiniteMats)
+	Xyz.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsSetCard,0x344),10,3,nil,nil,Xyz.InfiniteMats)
 	c:EnableReviveLimit()
 	--to deck
 	local e1=Effect.CreateEffect(c)
