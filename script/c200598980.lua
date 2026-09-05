@@ -69,6 +69,9 @@ function s.filter(c)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil) end
+	if e:GetHandler():IsLocation(LOCATION_DECK) then
+		Duel.ConfirmCards(1-tp,e:GetHandler())
+	end
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

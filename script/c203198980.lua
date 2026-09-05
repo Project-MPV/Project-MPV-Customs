@@ -45,6 +45,9 @@ function s.scon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.stg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	if e:GetHandler():IsLocation(LOCATION_DECK) then
+		Duel.ConfirmCards(1-tp,e:GetHandler())
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function s.sop(e,tp,eg,ep,ev,re,r,rp)
