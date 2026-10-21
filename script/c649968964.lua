@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,{id,1})
+	e2:SetCondition(s.spcon)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.adop)
 	c:RegisterEffect(e2)
@@ -41,6 +42,9 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SSet(tp,tc)
 end
 end
+end
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():HasNonZeroAttack() and e:GetHandler():HasNonZeroDefense()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

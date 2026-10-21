@@ -27,7 +27,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0xfc13}
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xfc13)
+    return c:IsFaceup() and c:IsSetCard(0xfc13) and (c:GetAttack()>0 or c:GetDefense()>0)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -41,33 +41,39 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		Duel.BreakEffect()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(tc:GetAttack()/2)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-		e2:SetValue(tc:GetDefense()/2)
-		tc:RegisterEffect(e2)
-		if tc:IsRelateToEffect(e) and s.sptg(e,tp,eg,ep,ev,re,r,rp,0) then
-		local token=Duel.CreateToken(tp,649968954)
-		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
-		local eff=Effect.CreateEffect(c)
-		eff:SetType(EFFECT_TYPE_SINGLE)
-		eff:SetCode(EFFECT_CANNOT_BE_MATERIAL)
-		eff:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		eff:SetValue(s.matlimit)
-		eff:SetReset(RESET_EVENT+RESETS_STANDARD)
-		token:RegisterEffect(eff)
-	end
-	Duel.SpecialSummonComplete()
-end
+    local c=e:GetHandler()
+    local tc=Duel.GetFirstTarget()
+    if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+        local atk=tc:GetAttack()
+        local def=tc:GetDefense()      
+        if atk==0 and def==0 then return end        
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_SINGLE)
+        e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+        e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+        e1:SetValue(math.floor(atk/2))
+        tc:RegisterEffect(e1)      
+        local e2=e1:Clone()
+        e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+        e2:SetValue(math.floor(def/2))
+        tc:RegisterEffect(e2)       
+        --Exfrost Token
+        if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+            and Duel.IsPlayerCanSpecialSummonMonster(tp,649968954,0xfc13,TYPES_TOKEN,100,100,2,RACE_AQUA,ATTRIBUTE_WATER) then           
+            Duel.BreakEffect()
+            local token=Duel.CreateToken(tp,649968954)
+            if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then
+                local eff=Effect.CreateEffect(c)
+                eff:SetType(EFFECT_TYPE_SINGLE)
+                eff:SetCode(EFFECT_CANNOT_BE_MATERIAL)
+                eff:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+                eff:SetValue(s.matlimit)
+                eff:SetReset(RESET_EVENT+RESETS_STANDARD)
+                token:RegisterEffect(eff)
+            end
+            Duel.SpecialSummonComplete()
+        end
+    end
 end
 function s.matlimit(e,c)
 	if not c then return false end

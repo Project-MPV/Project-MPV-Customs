@@ -7,8 +7,9 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.con)
 	e1:SetTarget(s.tg)
 	e1:SetOperation(s.op)
 	c:RegisterEffect(e1)
@@ -31,6 +32,9 @@ end
 s.listed_series={0xfc13}
 function s.tpfilter(c)
 	return c:IsTrap() and c:IsSetCard(0xfc13) and c:IsSSetable()
+end
+function s.con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():HasNonZeroAttack() and e:GetHandler():HasNonZeroDefense()
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.tpfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil) end

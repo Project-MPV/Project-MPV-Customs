@@ -34,15 +34,13 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.listed_series={0xfc13}
-function s.filter(c,code)
-	return c:IsFaceup() and c:IsCode(code)
-end
 function s.thfilter(c,tp)
-	return c:IsSetCard(0xfc13) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())
+    local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
+    return c:IsSetCard(0xfc13) and c:IsAbleToHand() 
+        and not g:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function s.quickcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_FZONE,0,1,nil)
+    return Duel.IsMainPhase() and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_FZONE,0,1,nil)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end

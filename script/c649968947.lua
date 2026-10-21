@@ -46,7 +46,7 @@ function s.sop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.nfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:HasNonZeroAttack()
 end
 function s.ntg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

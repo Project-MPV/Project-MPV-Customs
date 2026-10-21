@@ -39,7 +39,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 	local opt=Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1))
-	if opt==0 then
+	if opt==0 and tc:HasNonZeroAttack()then
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
