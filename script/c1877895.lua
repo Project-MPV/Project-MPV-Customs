@@ -44,7 +44,7 @@ function s.initial_effect(c)
 end
 --FIRE Rebirth Monster 
 function s.matfilter(tc)
-    return tc:IsAttribute(ATTRIBUTE_FIRE) and (tc:IsHasEffect(EFFECT_REBIRTH_GRADE) and tc:GetOriginalLevel()>0)
+    return tc:IsAttribute(ATTRIBUTE_FIRE) and tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
 end
 function s.sscon(e,tp,eg,ep,ev,re,r,rp)
     return e:GetHandler():IsSummonType(SUMMON_TYPE_REBIRTH)
