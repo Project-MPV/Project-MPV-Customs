@@ -7,7 +7,7 @@ s.Rebirth=true
 function s.initial_effect(c)
     c:EnableReviveLimit()   
     --1 Level 8 LIGHT Illusion monster
-    Rebirth.AddProcedure(c, 8, s.matfilter, 1, 1)
+    Rebirth.AddProcedure(c,8,s.matfilter,1,1)
     --Rebirth Summon (Place 1 "Imaginary Force" from GY to Soul)
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
