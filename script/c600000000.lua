@@ -46,11 +46,15 @@ function s.atkval(e,c)
     end   
     return total_hero_soul*200
 end
-
+function s.costfilter(c,tp)
+    return c:IsFaceup() and c:IsHasEffect(EFFECT_REBIRTH_GRADE) and c:GetOverlayCount() > 0
+end
 function s.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end 
-    local sg=c:GetOverlayGroup():Select(tp,1,1,nil)   
+    if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE,0,1,nil) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
+    local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_MZONE,0,1,1,nil)
+    local sc=g:GetFirst()
+    local sg=sc:GetOverlayGroup():Select(tp,1,1,nil)   
     --RECOVER Label
     e:SetLabel(sg:GetFirst():GetBaseAttack())
     Duel.SendtoGrave(sg,REASON_COST)
