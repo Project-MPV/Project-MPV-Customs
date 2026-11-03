@@ -219,7 +219,7 @@ function Rebirth.GetMixValue(tc)
     local eff=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
     if eff then
         local val=eff:GetValue()
-        return (type(val)=="function" and val(eff, tc) or val) or 0
+        return (type(val)=="function" and val(eff,tc) or val) or 0
     end
     return tc:GetOriginalLevel() or 0
 end
@@ -307,32 +307,61 @@ function Rebirth.AddCombinationProcedure(c,min,max,filter,special_con)
 	
 	Rebirth.AddCommonEffects(c,c:GetOriginalLevel())
 end
-
+function Rebirth.TraceFilter_Combination(tc,c,filter)
+    local loc=(tc:IsLocation(LOCATION_GRAVE) or tc:IsLocation(LOCATION_REMOVED))
+    if not (loc and tc:IsType(TYPE_MONSTER)) then return false end
+    if filter and type(filter)=="function" and not filter(tc,c) then 
+        return false 
+    end  
+    local has_grade=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+    local has_level=tc:GetOriginalLevel()>0 or tc:GetLevel()>0  
+    return has_grade or has_level
+end
 function Rebirth.CombinationCondition(min,max,filter,special_con)
     return function(e,c)
         if c==nil then return true end
         local tp=c:GetControler()
         local eff=c:IsHasEffect(EFFECT_REBIRTH_GRADE)
         local target_grade=eff and eff:GetValue() or c:GetOriginalLevel()              
-        if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter_Mix,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter)                       
-        if special_con and not special_con(e,tp,mg) then return false end                     
-        return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
-            return sg:GetSum(Rebirth.GetMixValue)==target_grade 
-        end,0)
+        if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end       
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter_Combination,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter)                       
+        if special_con and not special_con(e,tp,mg) then return false end                           
+        local combination_check=function(sg,e,tp,mg) 
+            if sg:GetSum(Rebirth.GetMixValue)~=target_grade then return false end            
+            local has_grade_material=false
+            local has_level_material=false           
+            for tc in aux.Next(sg) do
+                if tc:IsHasEffect(EFFECT_REBIRTH_GRADE) then
+                    has_grade_material=true
+                else
+                    has_level_material=true
+                end
+            end           
+            return has_grade_material and has_level_material
+        end      
+        return aux.SelectUnselectGroup(mg,e,tp,min,max,combination_check,0)
     end
 end
-
 function Rebirth.CombinationTarget(min,max,filter,special_con)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
         if chk==0 then return Rebirth.CombinationCondition(min,max,filter,special_con)(e,c) end       
         local eff=c:IsHasEffect(EFFECT_REBIRTH_GRADE)
         local grade=eff and eff:GetValue() or c:GetOriginalLevel()
-        local cancelable=Duel.IsSummonCancelable()
-        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter_Mix,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter)        
+        local cancelable=Duel.IsSummonCancelable()       
+        local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter_Combination,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter)               
         local check_func=function(sg,e,tp,mg) 
-            return sg:GetSum(Rebirth.GetMixValue)==grade 
-        end              
+            if sg:GetSum(Rebirth.GetMixValue)~=grade then return false end           
+            local has_grade_material=false
+            local has_level_material=false           
+            for tc in aux.Next(sg) do
+                if tc:IsHasEffect(EFFECT_REBIRTH_GRADE) then
+                    has_grade_material=true
+                else
+                    has_level_material=true
+                end
+            end         
+            return has_grade_material and has_level_material
+        end                     
         local sg=aux.SelectUnselectGroup(mg,e,tp,min,max,check_func,1,tp,HINTMSG_REMOVED,check_func,nil,cancelable)       
         if sg and #sg>0 and check_func(sg,e,tp,mg) then
             sg:KeepAlive()
@@ -342,7 +371,6 @@ function Rebirth.CombinationTarget(min,max,filter,special_con)
         return false
     end
 end
-
 function Rebirth.Operation(e,tp,eg,ep,ev,re,r,rp,c)
     local g=e:GetLabelObject()
     if not g then return end

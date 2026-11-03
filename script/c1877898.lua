@@ -31,8 +31,11 @@ function s.initial_effect(c)
     c:RegisterEffect(e2)
 end
 function s.matfilter(tc,c)
-    if tc:IsHasEffect(EFFECT_REBIRTH_GRADE) then
-        return tc:GetOriginalLevel()==8
+    local eff=tc:IsHasEffect(EFFECT_REBIRTH_GRADE)
+    if eff then
+        local val=eff:GetValue()
+        if type(val)=="function" then val=val(eff,tc) end
+        return val==8
     else
         return tc:GetLevel()>0 and tc:GetLevel()<=4
     end
