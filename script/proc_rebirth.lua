@@ -70,8 +70,7 @@ function Rebirth.StandardCondition(grade,filter,min,max)
     return function(e,c,og)
         if c==nil then return true end
         local tp=c:GetControler()
-        local zone=Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)
-        if zone<=0 then return false end
+        if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return false end
         local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter,false)		
         return aux.SelectUnselectGroup(mg,e,tp,min,max,function(sg,e,tp,mg) 
             return sg:GetSum(Rebirth.GetMaterialValue)==grade 
@@ -104,7 +103,7 @@ function Rebirth.StandardOperation(e,tp,eg,ep,ev,re,r,rp,c)
     if not sg then return end
     c:SetMaterial(sg)
     Duel.Overlay(c,sg,REASON_MATERIAL+REASON_REBIRTH)
-    local res = e:GetLabel() or 0
+    local res=e:GetLabel() or 0
     c:RegisterFlagEffect(c:GetCode(),RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,res)
     sg:DeleteGroup()
 end
@@ -121,8 +120,8 @@ function Rebirth.AddEvolutionProcedure(c,grade,material_filter,filter)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetCondition(Rebirth.EvolutionCondition(grade, material_filter, filter))
-    e1:SetTarget(Rebirth.EvolutionTarget(grade, material_filter, filter))
+    e1:SetCondition(Rebirth.EvolutionCondition(grade,material_filter,filter))
+    e1:SetTarget(Rebirth.EvolutionTarget(grade,material_filter,filter))
     e1:SetOperation(Rebirth.StandardOperation)
     e1:SetValue(SUMMON_TYPE_REBIRTH)
     c:RegisterEffect(e1)
@@ -131,7 +130,7 @@ function Rebirth.AddEvolutionProcedure(c,grade,material_filter,filter)
 end
 --Helper to detect whether material_filter is an ID (number) or a Function
 function Rebirth.GetEvoFilter(material_filter)
-    if type(material_filter) == "number" then
+    if type(material_filter)=="number" then
         return function(tc) return tc:IsCode(material_filter) end
     else
         return material_filter
@@ -159,28 +158,24 @@ function Rebirth.EvolutionFilter(tc,base_id)
 end
 
 function Rebirth.GetEvoFilter(material_filter)
-    if type(material_filter) == "number" then
+    if type(material_filter)=="number" then
         return function(tc) return tc:IsCode(material_filter) end
     else
         return material_filter
     end
 end
 
-function Rebirth.EvolutionTarget(grade, material_filter, filter)
+function Rebirth.EvolutionTarget(grade,material_filter,filter)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
         local f_prime=Rebirth.GetEvoFilter(material_filter)
-        if chk==0 then return Rebirth.EvolutionCondition(grade,material_filter,filter)(e,c) end
-        
+        if chk==0 then return Rebirth.EvolutionCondition(grade,material_filter,filter)(e,c) end        
         local mg_prime=Duel.GetMatchingGroup(f_prime,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-        local mg_std=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter,false)
-        
+        local mg_std=Duel.GetMatchingGroup(Rebirth.TraceFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter,false)      
         local mg=mg_std:Clone()
-        mg:Merge(mg_prime)
-        
+        mg:Merge(mg_prime)        
         local cancelable=Duel.IsSummonCancelable()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-        local sg=aux.SelectUnselectGroup(mg,e,tp,1,99,Rebirth.EvolutionCheck(grade, f_prime),1,tp,HINTMSG_REMOVE,Rebirth.EvolutionCheck(grade, f_prime),nil,cancelable)
-        
+        local sg=aux.SelectUnselectGroup(mg,e,tp,1,99,Rebirth.EvolutionCheck(grade,f_prime),1,tp,HINTMSG_REMOVE,Rebirth.EvolutionCheck(grade,f_prime),nil,cancelable)       
         if sg and #sg>0 then
             sg:KeepAlive()
             e:SetLabelObject(sg)
@@ -194,7 +189,6 @@ function Rebirth.EvolutionTarget(grade, material_filter, filter)
         return false
     end
 end
-
 --------------------------------------------------------------------------------
 --GENERIC
 --------------------------------------------------------------------------------
