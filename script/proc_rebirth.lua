@@ -64,8 +64,12 @@ function Rebirth.FastCanSum(mg,target,min_mat,max_mat,val_func)
     return false
 end
 --COMBINATION (Grade+Level check)
-function Rebirth.FastCanSumCombo(mg,target,min_mat,max_mat)
-    if not target or target<=0 then return false end
+function Rebirth.FastCanSumCombo(mg,target,min_mat,max_mat,init_state)
+    init_state = init_state or 0
+    if target==0 then
+        return min_mat<=0 and init_state==3
+    end
+    if not target or target<0 then return false end
     local items={}
     for tc in aux.Next(mg) do
         local v=Rebirth.GetMixValue(tc)
@@ -75,7 +79,7 @@ function Rebirth.FastCanSumCombo(mg,target,min_mat,max_mat)
     end
     if #items<min_mat then return false end
     local eff_max=math.min(max_mat or 99,target)
-    local dp={[0]={[0]=1}}
+    local dp={[0]={[init_state]=1}}
     for _,item in ipairs(items) do
         local v=item.val
         local bit=item.is_grade and 2 or 1
@@ -269,14 +273,14 @@ end
 function Rebirth.EvoCandFilter(tc,sg,mg_std,f_prime,grade,cur_sum)
     if #sg==0 and f_prime(tc) then return true end
     if not mg_std:IsContains(tc) then return false end
-    local v=Rebirth.GetMixValue(tc)
+    local v=Rebirth.GetMaterialValue(tc)
     local rem=grade-cur_sum
     if v<=0 or v>rem then return false end
     if v==rem then return true end
     local test_g=mg_std:Clone()
     test_g:Sub(sg)
     test_g:RemoveCard(tc)
-    return Rebirth.FastCanSum(test_g,rem-v,1,grade-#sg-1,Rebirth.GetMixValue)
+    return Rebirth.FastCanSum(test_g,rem-v,1,grade-#sg-1,Rebirth.GetMaterialValue)
 end
 function Rebirth.EvolutionTarget(grade,material_filter,filter)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
@@ -288,17 +292,20 @@ function Rebirth.EvolutionTarget(grade,material_filter,filter)
         local sg=Group.CreateGroup()
         local cancelable=Duel.IsSummonCancelable()
         while #sg<grade do
-            local cur_sum=sg:GetSum(Rebirth.GetMixValue)
+            local cur_sum=sg:GetSum(Rebirth.GetMaterialValue)
             local is_prime=(#sg==1 and f_prime(sg:GetFirst()))
             local finish=is_prime or (cur_sum==grade and #sg>=1)
-            local cg=is_prime and Group.CreateGroup() or mg:Filter(Rebirth.EvoCandFilter,sg,sg,mg_std,f_prime,grade,cur_sum)
-            if #cg==0 and not finish then return false end
+            local cg=Group.CreateGroup()
+            if not is_prime then
+                cg=mg:Filter(Rebirth.EvoCandFilter,sg,sg,mg_std,f_prime,grade,cur_sum)
+            end
+            if #cg==0 and not finish then break end
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-            local tc=Group.SelectUnselect(cg+sg,sg,tp,finish,cancelable and #sg==0,1,grade)
+            local tc=Group.SelectUnselect(cg,sg,tp,finish,cancelable and #sg==0,1,1)
             if not tc then break end
             if not sg:IsContains(tc) then sg:AddCard(tc) else sg:RemoveCard(tc) end
         end
-        if #sg>0 and ((#sg==1 and f_prime(sg:GetFirst())) or sg:GetSum(Rebirth.GetMixValue)==grade) then
+        if #sg>0 and ((#sg==1 and f_prime(sg:GetFirst())) or sg:GetSum(Rebirth.GetMaterialValue)==grade) then
             sg:KeepAlive()
             e:SetLabelObject(sg)
             e:SetLabel((#sg==1 and f_prime(sg:GetFirst())) and 1 or 0)
@@ -359,7 +366,7 @@ function Rebirth.AddGenericProcedure(c,min,max,filter)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
-    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
     e1:SetRange(LOCATION_EXTRA)
     e1:SetCondition(Rebirth.GenericCondition(min,max,filter))
     e1:SetTarget(Rebirth.GenericTarget(min,max,filter))
@@ -387,7 +394,7 @@ function Rebirth.GenericTarget(min,max,filter)
         local target_grade=eff and eff:GetValue() or c:GetOriginalLevel()
         local cancelable=Duel.IsSummonCancelable()
         local mg=Duel.GetMatchingGroup(Rebirth.TraceFilter_Mix,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c,filter)        
-        local sg=Rebirth.SelectMaterials(mg,tp,target_grade,min,max,Rebirth.GetMixValue,cancelable,HINTMSG_REMOVED)
+        local sg=Rebirth.SelectMaterials(mg,tp,target_grade,min,max,Rebirth.GetMixValue,cancelable,HINTMSG_CONFIRM)
 		if sg then
 			sg:KeepAlive()
 			e:SetLabelObject(sg)
@@ -405,7 +412,7 @@ function Rebirth.AddCombinationProcedure(c,min,max,filter,special_con,grade)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCondition(Rebirth.CombinationCondition(min,max,filter,special_con))
 	e1:SetTarget(Rebirth.CombinationTarget(min,max,filter,special_con))
@@ -445,18 +452,16 @@ function Rebirth.ComboCandFilter(tc,sg,rem_g,grade,min,eff_max)
     if cur_sum>grade then return false end
     local has_g=test_sg:IsExists(Card.IsHasEffect,1,nil,EFFECT_REBIRTH_GRADE)
     local has_l=test_sg:IsExists(aux.NOT(Card.IsHasEffect),1,nil,EFFECT_REBIRTH_GRADE)
+    local cur_state=(has_g and 2 or 0)|(has_l and 1 or 0)
     if cur_sum==grade then
-        return #test_sg>=min and has_g and has_l
+        return #test_sg>=min and cur_state==3
     end
-    local rem_min=math.max(0,min-#test_sg)
+    local rem_min=math.max(1,min-#test_sg)
     local rem_max=eff_max-#test_sg
     if rem_max<=0 then return false end
     local next_g=rem_g:Clone()
     next_g:RemoveCard(tc)
-    if has_g and has_l then
-        return Rebirth.FastCanSum(next_g,grade-cur_sum,rem_min,rem_max,Rebirth.GetMixValue)
-    end
-    return Rebirth.FastCanSumCombo(next_g,grade-cur_sum,math.max(1,rem_min),rem_max)
+    return Rebirth.FastCanSumCombo(next_g,grade-cur_sum,rem_min,rem_max,cur_state)
 end
 function Rebirth.CombinationTarget(min,max,filter,special_con)
     return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
@@ -474,9 +479,9 @@ function Rebirth.CombinationTarget(min,max,filter,special_con)
             local rem_g=mg:Clone()
             rem_g:Sub(sg)
             local cg=rem_g:Filter(Rebirth.ComboCandFilter,nil,sg,rem_g,grade,min,eff_max)
-            if #cg==0 and not finish then return false end
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVED)
-            local tc=Group.SelectUnselect(cg+sg,sg,tp,finish,cancelable and #sg==0,min,eff_max)
+            if #cg==0 and not finish then break end
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+            local tc=Group.SelectUnselect(cg,sg,tp,finish,cancelable and #sg==0,1,1)
             if not tc then break end
             if not sg:IsContains(tc) then sg:AddCard(tc) else sg:RemoveCard(tc) end
         end
@@ -512,7 +517,8 @@ function Rebirth.AddCommonEffects(c,grade)
     e0:SetValue(TYPE_FUSION)
     c:RegisterEffect(e0)   
     local e1=Effect.CreateEffect(c)
-    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+    e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+    e1:SetRange(LOCATION_ALL)
     e1:SetType(EFFECT_TYPE_SINGLE)
     e1:SetCode(EFFECT_REBIRTH_GRADE)
     e1:SetValue(grade or 0)
